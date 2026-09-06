@@ -6,45 +6,44 @@ import React, { useState, useEffect } from 'react';
 function LandingView({ onLaunchRailEngine }) {
   return (
     <div className="w-full min-h-screen bg-space-void text-on-surface flex flex-col justify-between">
-      {/* Top Bar */}
-      <header class="fixed top-0 w-full z-50 bg-space-void/90 backdrop-blur-xl border-b border-purple-500/20">
-        <div class="h-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
-          <div class="flex items-center gap-4 shrink-0">
-            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-electric to-purple-800 flex items-center justify-center text-white border border-purple-400/40">
-              <span class="material-symbols-outlined text-xl">train</span>
+      <header className="fixed top-0 w-full z-50 bg-space-void/90 backdrop-blur-xl border-b border-purple-500/20">
+        <div className="h-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4 shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-electric to-purple-800 flex items-center justify-center text-white border border-purple-400/40">
+              <span className="material-symbols-outlined text-xl">train</span>
             </div>
-            <div class="flex flex-col">
-              <span class="font-pixel text-lg text-on-surface tracking-wider uppercase leading-none font-bold">
+            <div className="flex flex-col">
+              <span className="font-pixel text-lg text-on-surface tracking-wider uppercase leading-none font-bold">
                 RAIL EAZY
               </span>
-              <span class="text-[10px] font-mono text-violet-lavender uppercase tracking-widest leading-none mt-1">
+              <span className="text-[10px] font-mono text-violet-lavender uppercase tracking-widest leading-none mt-1">
                 TRANSIT MATRIX
               </span>
             </div>
-            <div class="hidden xl:flex items-center gap-2 px-2.5 py-1 bg-surface-container-lowest text-on-surface border border-purple-500/20 rounded">
-              <span class="w-2 h-2 rounded-full bg-violet-electric animate-pulse"></span>
-              <span class="text-[11px] font-mono text-primary uppercase tracking-widest">
+            <div className="hidden xl:flex items-center gap-2 px-2.5 py-1 bg-surface-container-lowest text-on-surface border border-purple-500/20 rounded">
+              <span className="w-2 h-2 rounded-full bg-violet-electric animate-pulse"></span>
+              <span className="text-[11px] font-mono text-primary uppercase tracking-widest">
                 LIVE NETWORK: NGP ⇄ NDLS
               </span>
             </div>
           </div>
 
-          <nav class="hidden md:flex items-center gap-2">
+          <nav className="hidden md:flex items-center gap-2">
             <button
               onClick={onLaunchRailEngine}
-              class="px-3.5 py-1.5 rounded-lg bg-primary-container text-on-primary-container font-mono text-xs font-bold uppercase tracking-wider shadow-[2px_2px_0px_#3d1f85] hover:bg-violet-electric transition-colors"
+              className="px-3.5 py-1.5 rounded-lg bg-primary-container text-on-primary-container font-mono text-xs font-bold uppercase tracking-wider shadow-[2px_2px_0px_#3d1f85] hover:bg-violet-electric transition-colors"
             >
               Rail Engine
             </button>
             <a
               href="#portals"
-              class="px-3 py-1.5 font-mono text-xs text-on-surface-variant hover:text-white transition-colors uppercase tracking-wider"
+              className="px-3 py-1.5 font-mono text-xs text-on-surface-variant hover:text-white transition-colors uppercase tracking-wider"
             >
               Portals
             </a>
             <a
               href="#how-it-works"
-              class="px-3 py-1.5 font-mono text-xs text-on-surface-variant hover:text-white transition-colors uppercase tracking-wider"
+              className="px-3 py-1.5 font-mono text-xs text-on-surface-variant hover:text-white transition-colors uppercase tracking-wider"
             >
               Methodology
             </a>
@@ -52,111 +51,107 @@ function LandingView({ onLaunchRailEngine }) {
 
           <button
             onClick={onLaunchRailEngine}
-            class="px-3 py-1.5 bg-surface-container-high hover:bg-violet-electric hover:text-white text-xs font-mono text-primary rounded border border-purple-500/30 transition-all flex items-center gap-1.5"
+            className="px-3 py-1.5 bg-surface-container-high hover:bg-violet-electric hover:text-white text-xs font-mono text-primary rounded border border-purple-500/30 transition-all flex items-center gap-1.5 cursor-pointer"
           >
             <span>Open App</span>
-            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+            <span className="material-symbols-outlined text-sm">arrow_forward</span>
           </button>
         </div>
       </header>
 
-      {/* Main Hero & Sections */}
-      <main class="w-full pt-20">
-        {/* Section 1: Hero Header */}
-        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-16">
-          <div class="inline-flex items-center gap-2 px-3 py-1 bg-surface-container-low mb-6 border border-purple-500/20 rounded-full">
-            <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-            <span class="font-mono text-xs text-primary uppercase tracking-wider">
+      <main className="w-full pt-20">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-16">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-surface-container-low mb-6 border border-purple-500/20 rounded-full">
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+            <span className="font-mono text-xs text-primary uppercase tracking-wider">
               TRANSIT MATRIX ENGINE v2.8 • BYPASS BOTTLENECK CORRIDORS
             </span>
           </div>
 
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mb-16">
-            {/* Left Col */}
-            <div class="lg:col-span-7 flex flex-col items-start space-y-4">
-              <div class="flex items-center gap-2 text-xs font-mono">
-                <span class="text-violet-lavender uppercase tracking-widest bg-surface-container-high px-2 py-0.5 rounded">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mb-16">
+            <div className="lg:col-span-7 flex flex-col items-start space-y-4">
+              <div className="flex items-center gap-2 text-xs font-mono">
+                <span className="text-violet-lavender uppercase tracking-widest bg-surface-container-high px-2 py-0.5 rounded">
                   Autonomous Routing
                 </span>
-                <span class="text-violet-lavender">•</span>
-                <span class="text-primary uppercase tracking-widest">Next-Gen Transit Optimization</span>
+                <span className="text-violet-lavender">•</span>
+                <span className="text-primary uppercase tracking-widest">Next-Gen Transit Optimization</span>
               </div>
 
-              <h1 class="text-4xl sm:text-5xl font-extrabold text-on-surface uppercase tracking-tight leading-tight">
+              <h1 className="text-4xl sm:text-5xl font-extrabold text-on-surface uppercase tracking-tight leading-tight">
                 Bypass Waitlists.<br />
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-violet-lavender to-white">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-violet-lavender to-white">
                   Unlock Intelligent Split Routing.
                 </span>
               </h1>
 
-              <p class="text-sm sm:text-base text-on-surface-variant max-w-2xl leading-relaxed">
+              <p className="text-sm sm:text-base text-on-surface-variant max-w-2xl leading-relaxed">
                 When direct trunk lines choke under heavy GNWL waitlists, Rail Eazy dynamically computes synchronized
                 dual-leg interchanges through high-throughput junctions, backed by guaranteed verified buffer windows.
               </p>
 
-              <div class="flex flex-wrap items-center gap-4 pt-4">
+              <div className="flex flex-wrap items-center gap-4 pt-4">
                 <button
                   onClick={onLaunchRailEngine}
-                  class="inline-flex items-center gap-2 px-6 py-3.5 bg-primary-container text-on-primary-container font-mono text-xs font-bold uppercase tracking-wider rounded-xl shadow-[3px_3px_0px_#3d1f85] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                  className="inline-flex items-center gap-2 px-6 py-3.5 bg-primary-container text-on-primary-container font-mono text-xs font-bold uppercase tracking-wider rounded-xl shadow-[3px_3px_0px_#3d1f85] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all cursor-pointer"
                 >
                   <span>Launch Rail Engine</span>
-                  <span class="material-symbols-outlined text-base">arrow_forward</span>
+                  <span className="material-symbols-outlined text-base">arrow_forward</span>
                 </button>
                 <a
                   href="#how-it-works"
-                  class="inline-flex items-center gap-2 px-5 py-3.5 bg-surface-container text-on-surface font-mono text-xs uppercase tracking-wider rounded-xl hover:bg-surface-container-high transition-colors"
+                  className="inline-flex items-center gap-2 px-5 py-3.5 bg-surface-container text-on-surface font-mono text-xs uppercase tracking-wider rounded-xl hover:bg-surface-container-high transition-colors"
                 >
-                  <span class="material-symbols-outlined text-base text-violet-lavender">account_tree</span>
+                  <span className="material-symbols-outlined text-base text-violet-lavender">account_tree</span>
                   <span>Inspect Methodology</span>
                 </a>
               </div>
             </div>
 
-            {/* Right Col: Telemetry Radar */}
-            <div class="lg:col-span-5 w-full">
-              <div class="bg-surface-container-low p-6 rounded-2xl border border-purple-500/30 shadow-xl relative overflow-hidden">
-                <div class="flex items-center justify-between pb-3 mb-4 bg-surface-container px-3 py-2 rounded-lg">
-                  <div class="flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 bg-primary rounded-full animate-ping"></span>
-                    <span class="font-mono text-xs text-on-surface uppercase font-bold">LIVE TELEMETRY</span>
+            <div className="lg:col-span-5 w-full">
+              <div className="bg-surface-container-low p-6 rounded-2xl border border-purple-500/30 shadow-xl relative overflow-hidden">
+                <div className="flex items-center justify-between pb-3 mb-4 bg-surface-container px-3 py-2 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 bg-primary rounded-full animate-ping"></span>
+                    <span className="font-mono text-xs text-on-surface uppercase font-bold">LIVE TELEMETRY</span>
                   </div>
-                  <span class="text-[11px] font-mono text-violet-lavender uppercase">SYNC_FREQ: 240ms</span>
+                  <span className="text-[11px] font-mono text-violet-lavender uppercase">SYNC_FREQ: 240ms</span>
                 </div>
 
-                <div class="relative bg-surface-container-lowest p-4 mb-4 rounded-xl overflow-hidden flex flex-col justify-between h-48 border border-purple-500/20">
-                  <div class="relative z-10 flex justify-between items-start">
+                <div className="relative bg-surface-container-lowest p-4 mb-4 rounded-xl overflow-hidden flex flex-col justify-between h-48 border border-purple-500/20">
+                  <div className="relative z-10 flex justify-between items-start">
                     <div>
-                      <span class="text-[10px] font-mono text-violet-lavender uppercase block">ORIGIN NODE</span>
-                      <span class="font-pixel text-2xl text-on-surface font-bold">NGP</span>
-                      <span class="text-xs text-on-surface-variant block">Nagpur Central</span>
+                      <span className="text-[10px] font-mono text-violet-lavender uppercase block">ORIGIN NODE</span>
+                      <span className="font-pixel text-2xl text-on-surface font-bold">NGP</span>
+                      <span className="text-xs text-on-surface-variant block">Nagpur Central</span>
                     </div>
-                    <div class="text-center px-2 py-1 bg-secondary-container/60 rounded border border-purple-500/30">
-                      <span class="text-[11px] font-mono text-primary uppercase font-bold block">INTERCHANGE: BPL</span>
-                      <span class="text-[10px] text-on-surface-variant block">+3h 15m Safe Layover</span>
+                    <div className="text-center px-2 py-1 bg-secondary-container/60 rounded border border-purple-500/30">
+                      <span className="text-[11px] font-mono text-primary uppercase font-bold block">INTERCHANGE: BPL</span>
+                      <span className="text-[10px] text-on-surface-variant block">+3h 15m Safe Layover</span>
                     </div>
-                    <div class="text-right">
-                      <span class="text-[10px] font-mono text-violet-lavender uppercase block">DEST NODE</span>
-                      <span class="font-pixel text-2xl text-on-surface font-bold">NDLS</span>
-                      <span class="text-xs text-on-surface-variant block">New Delhi Term</span>
+                    <div className="text-right">
+                      <span className="text-[10px] font-mono text-violet-lavender uppercase block">DEST NODE</span>
+                      <span className="font-pixel text-2xl text-on-surface font-bold">NDLS</span>
+                      <span className="text-xs text-on-surface-variant block">New Delhi Term</span>
                     </div>
                   </div>
 
-                  <div class="relative z-10 flex items-center justify-between pt-2 bg-surface-container-high/80 px-3 py-1.5 rounded text-xs font-mono">
-                    <span class="text-rose-400">DIRECT: GNWL 82</span>
-                    <span class="text-mint-glow font-bold bg-mint-emerald/20 px-2 py-0.5 rounded border border-mint-emerald/30">
+                  <div className="relative z-10 flex items-center justify-between pt-2 bg-surface-container-high/80 px-3 py-1.5 rounded text-xs font-mono">
+                    <span className="text-rose-400">DIRECT: GNWL 82</span>
+                    <span className="text-mint-glow font-bold bg-mint-emerald/20 px-2 py-0.5 rounded border border-mint-emerald/30">
                       SPLIT: AVAILABLE
                     </span>
                   </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-2 font-mono text-xs">
-                  <div class="bg-surface-container p-2.5 rounded-lg flex flex-col">
-                    <span class="text-violet-lavender text-[10px]">BUFFER SAFETY</span>
-                    <span class="text-on-surface font-bold">99.4% VERIFIED</span>
+                <div className="grid grid-cols-2 gap-2 font-mono text-xs">
+                  <div className="bg-surface-container p-2.5 rounded-lg flex flex-col">
+                    <span className="text-violet-lavender text-[10px]">BUFFER SAFETY</span>
+                    <span className="text-on-surface font-bold">99.4% VERIFIED</span>
                   </div>
-                  <div class="bg-surface-container p-2.5 rounded-lg flex flex-col">
-                    <span class="text-violet-lavender text-[10px]">CORRIDOR AXIS</span>
-                    <span class="text-on-surface font-bold">CENTRAL ⇄ NORTH</span>
+                  <div className="bg-surface-container p-2.5 rounded-lg flex flex-col">
+                    <span className="text-violet-lavender text-[10px]">CORRIDOR AXIS</span>
+                    <span className="text-on-surface font-bold">CENTRAL ⇄ NORTH</span>
                   </div>
                 </div>
               </div>
@@ -164,116 +159,113 @@ function LandingView({ onLaunchRailEngine }) {
           </div>
         </section>
 
-        {/* Section 2: Transit Portal Selector */}
-        <section class="w-full bg-surface-container-lowest py-16 border-t border-purple-500/20" id="portals">
-          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col md:flex-row md:items-end justify-between mb-10">
+        <section className="w-full bg-surface-container-lowest py-16 border-t border-purple-500/20" id="portals">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-10">
               <div>
-                <div class="flex items-center gap-2 mb-1">
-                  <span class="w-3 h-0.5 bg-primary"></span>
-                  <span class="font-mono text-xs text-primary uppercase tracking-widest font-bold">LAUNCHPAD ENGINES</span>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="w-3 h-0.5 bg-primary"></span>
+                  <span className="font-mono text-xs text-primary uppercase tracking-widest font-bold">LAUNCHPAD ENGINES</span>
                 </div>
-                <h2 class="text-3xl font-extrabold text-on-surface uppercase tracking-tight">
+                <h2 className="text-3xl font-extrabold text-on-surface uppercase tracking-tight">
                   SELECT TRANSIT PORTAL
                 </h2>
               </div>
-              <p class="text-xs md:text-sm text-on-surface-variant max-w-md mt-2 md:mt-0">
+              <p className="text-xs md:text-sm text-on-surface-variant max-w-md mt-2 md:mt-0">
                 Active high-demand railway split solver &amp; upcoming domestic aviation multi-modal pipelines.
               </p>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Card A: Railway (Active) */}
-              <div class="relative bg-surface-container-low p-6 rounded-2xl border border-purple-500/30 flex flex-col justify-between shadow-[4px_4px_0px_#3d1f85] hover:border-violet-electric transition-all">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="relative bg-surface-container-low p-6 rounded-2xl border border-purple-500/30 flex flex-col justify-between shadow-[4px_4px_0px_#3d1f85] hover:border-violet-electric transition-all">
                 <div>
-                  <div class="flex items-center justify-between mb-4">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 bg-surface-container text-on-surface rounded-full border border-mint-emerald/30">
-                      <span class="w-2 h-2 rounded-full bg-mint-emerald animate-pulse"></span>
-                      <span class="font-mono text-xs text-mint-glow font-bold uppercase">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-surface-container text-on-surface rounded-full border border-mint-emerald/30">
+                      <span className="w-2 h-2 rounded-full bg-mint-emerald animate-pulse"></span>
+                      <span className="font-mono text-xs text-mint-glow font-bold uppercase">
                         ONLINE • NGP ⇔ NDLS CORRIDOR LIVE
                       </span>
                     </div>
-                    <span class="text-xs font-mono text-violet-lavender">PORTAL_ID: 01-RAIL</span>
+                    <span className="text-xs font-mono text-violet-lavender">PORTAL_ID: 01-RAIL</span>
                   </div>
 
-                  <div class="flex items-center gap-4 mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-primary-container flex items-center justify-center text-white shadow-md">
-                      <span class="material-symbols-outlined text-2xl">train</span>
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-primary-container flex items-center justify-center text-white shadow-md">
+                      <span className="material-symbols-outlined text-2xl">train</span>
                     </div>
                     <div>
-                      <h3 class="text-xl font-bold text-on-surface uppercase">Indian Railways</h3>
-                      <span class="text-xs font-mono text-primary uppercase">Trunk Line Split Engine • Timetables Active</span>
+                      <h3 className="text-xl font-bold text-on-surface uppercase">Indian Railways</h3>
+                      <span className="text-xs font-mono text-primary uppercase">Trunk Line Split Engine • Timetables Active</span>
                     </div>
                   </div>
 
-                  <p class="text-xs sm:text-sm text-on-surface-variant mb-6 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-on-surface-variant mb-6 leading-relaxed">
                     Engineered multi-leg routing across heavy trunk corridors via strategic junctions (BPL, ET, VGLJ)
                     to bypass congested direct waitlists and discover unreserved regional segment capacity.
                   </p>
 
-                  <div class="flex flex-wrap gap-2 mb-6">
+                  <div className="flex flex-wrap gap-2 mb-6">
                     {['Waitlist Bypass', 'Junction Layover Buffers', 'Class Tariffs (SL, 3A, 2A, CC)'].map((tag) => (
-                      <span key={tag} class="px-2.5 py-1 bg-surface-container text-on-surface font-mono text-xs rounded border border-purple-500/20">
+                      <span key={tag} className="px-2.5 py-1 bg-surface-container text-on-surface font-mono text-xs rounded border border-purple-500/20">
                         {tag}
                       </span>
                     ))}
                   </div>
                 </div>
 
-                <div class="pt-4 border-t border-purple-500/20">
+                <div className="pt-4 border-t border-purple-500/20">
                   <button
                     onClick={onLaunchRailEngine}
-                    class="w-full py-3.5 rounded-xl bg-gradient-to-r from-violet-electric to-purple-600 hover:from-purple-500 hover:to-violet-electric text-white font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-violet-electric/30 transition-all cursor-pointer"
+                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-violet-electric to-purple-600 hover:from-purple-500 hover:to-violet-electric text-white font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-violet-electric/30 transition-all cursor-pointer"
                   >
                     <span>Launch Rail Engine</span>
-                    <span class="material-symbols-outlined text-base">arrow_forward</span>
+                    <span className="material-symbols-outlined text-base">arrow_forward</span>
                   </button>
                 </div>
               </div>
 
-              {/* Card B: Domestic Aviation (Roadmap) */}
-              <div class="relative bg-surface-container-low/60 p-6 rounded-2xl border border-purple-500/20 flex flex-col justify-between opacity-75">
+              <div className="relative bg-surface-container-low/60 p-6 rounded-2xl border border-purple-500/20 flex flex-col justify-between opacity-75">
                 <div>
-                  <div class="flex items-center justify-between mb-4">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 bg-surface-container text-on-surface rounded-full">
-                      <span class="w-2 h-2 rounded-full bg-outline"></span>
-                      <span class="font-mono text-xs text-on-surface-variant uppercase font-bold">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-surface-container text-on-surface rounded-full">
+                      <span className="w-2 h-2 rounded-full bg-outline"></span>
+                      <span className="font-mono text-xs text-on-surface-variant uppercase font-bold">
                         IN DEVELOPMENT • ROADMAP
                       </span>
                     </div>
-                    <span class="text-xs font-mono text-on-surface-variant">PORTAL_ID: 02-AVIA</span>
+                    <span className="text-xs font-mono text-on-surface-variant">PORTAL_ID: 02-AVIA</span>
                   </div>
 
-                  <div class="flex items-center gap-4 mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center text-violet-lavender">
-                      <span class="material-symbols-outlined text-2xl">flight_takeoff</span>
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center text-violet-lavender">
+                      <span className="material-symbols-outlined text-2xl">flight_takeoff</span>
                     </div>
                     <div>
-                      <h3 class="text-xl font-bold text-on-surface uppercase">Domestic Aviation</h3>
-                      <span class="text-xs font-mono text-on-surface-variant uppercase">Multi-Carrier Transfer Engine</span>
+                      <h3 className="text-xl font-bold text-on-surface uppercase">Domestic Aviation</h3>
+                      <span className="text-xs font-mono text-on-surface-variant uppercase">Multi-Carrier Transfer Engine</span>
                     </div>
                   </div>
 
-                  <p class="text-xs sm:text-sm text-on-surface-variant mb-6 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-on-surface-variant mb-6 leading-relaxed">
                     Multi-carrier flight split routing for high-demand routes, calculating self-transfer baggage reclaim buffers
                     and inter-terminal transitions to cut peak holiday fares.
                   </p>
 
-                  <div class="flex flex-wrap gap-2 mb-6">
+                  <div className="flex flex-wrap gap-2 mb-6">
                     {['LCC Splitting', 'Self-Transfer Bags Buffer', 'Terminal Transit Timers'].map((tag) => (
-                      <span key={tag} class="px-2.5 py-1 bg-surface-container-high text-on-surface-variant font-mono text-xs rounded">
+                      <span key={tag} className="px-2.5 py-1 bg-surface-container-high text-on-surface-variant font-mono text-xs rounded">
                         {tag}
                       </span>
                     ))}
                   </div>
                 </div>
 
-                <div class="pt-4 border-t border-purple-500/20">
+                <div className="pt-4 border-t border-purple-500/20">
                   <button
                     disabled
-                    class="w-full py-3.5 rounded-xl bg-surface-container text-outline font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-not-allowed"
+                    className="w-full py-3.5 rounded-xl bg-surface-container text-outline font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-not-allowed"
                   >
-                    <span class="material-symbols-outlined text-base">lock</span>
+                    <span className="material-symbols-outlined text-base">lock</span>
                     <span>Roadmap Pipeline (Upcoming)</span>
                   </button>
                 </div>
@@ -282,62 +274,61 @@ function LandingView({ onLaunchRailEngine }) {
           </div>
         </section>
 
-        {/* Section 3: How It Works */}
-        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 w-full" id="how-it-works">
-          <div class="text-center max-w-2xl mx-auto mb-12">
-            <span class="font-mono text-xs text-violet-lavender uppercase tracking-widest font-bold">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 w-full" id="how-it-works">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <span className="font-mono text-xs text-violet-lavender uppercase tracking-widest font-bold">
               ALGORITHMIC LOGIC
             </span>
-            <h2 class="text-3xl font-extrabold text-on-surface uppercase tracking-tight mt-1">
+            <h2 className="text-3xl font-extrabold text-on-surface uppercase tracking-tight mt-1">
               HOW SPLIT ROUTING UNLOCKS BERTHS
             </h2>
-            <p class="text-xs sm:text-sm text-on-surface-variant mt-2">
+            <p className="text-xs sm:text-sm text-on-surface-variant mt-2">
               Bypassing waitlist deadlock takes precision timing, mathematical quota mapping, and verified layover tolerances.
             </p>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-surface-container-low p-6 rounded-2xl border border-purple-500/20 flex flex-col justify-between">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-surface-container-low p-6 rounded-2xl border border-purple-500/20 flex flex-col justify-between">
               <div>
-                <div class="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center mb-4 text-primary">
-                  <span class="material-symbols-outlined text-xl">pin_drop</span>
+                <div className="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center mb-4 text-primary">
+                  <span className="material-symbols-outlined text-xl">pin_drop</span>
                 </div>
-                <h3 class="text-base font-bold text-on-surface uppercase mb-2">01. Select Station Pair</h3>
-                <p class="text-xs text-on-surface-variant leading-relaxed mb-4">
+                <h3 className="text-base font-bold text-on-surface uppercase mb-2">01. Select Station Pair</h3>
+                <p className="text-xs text-on-surface-variant leading-relaxed mb-4">
                   Input origin and destination along the corridor where direct trains show heavy waitlists (GNWL).
                 </p>
               </div>
-              <div class="pt-2 border-t border-purple-500/20 text-[11px] font-mono text-violet-lavender">
+              <div className="pt-2 border-t border-purple-500/20 text-[11px] font-mono text-violet-lavender">
                 Query Corridor: NGP → NDLS
               </div>
             </div>
 
-            <div class="bg-surface-container-low p-6 rounded-2xl border border-purple-500/20 flex flex-col justify-between">
+            <div className="bg-surface-container-low p-6 rounded-2xl border border-purple-500/20 flex flex-col justify-between">
               <div>
-                <div class="w-10 h-10 rounded-xl bg-primary-container/20 flex items-center justify-center mb-4 text-primary">
-                  <span class="material-symbols-outlined text-xl">alt_route</span>
+                <div className="w-10 h-10 rounded-xl bg-primary-container/20 flex items-center justify-center mb-4 text-primary">
+                  <span className="material-symbols-outlined text-xl">alt_route</span>
                 </div>
-                <h3 class="text-base font-bold text-on-surface uppercase mb-2">02. Interchange Detection</h3>
-                <p class="text-xs text-on-surface-variant leading-relaxed mb-4">
+                <h3 className="text-base font-bold text-on-surface uppercase mb-2">02. Interchange Detection</h3>
+                <p className="text-xs text-on-surface-variant leading-relaxed mb-4">
                   The engine identifies intermediate hubs (Bhopal, Itarsi, Jhansi) with safe transfer windows (45m to 6h).
                 </p>
               </div>
-              <div class="pt-2 border-t border-purple-500/20 text-[11px] font-mono text-mint-glow">
+              <div className="pt-2 border-t border-purple-500/20 text-[11px] font-mono text-mint-glow">
                 Safety Buffer Check: Verified
               </div>
             </div>
 
-            <div class="bg-surface-container-low p-6 rounded-2xl border border-purple-500/20 flex flex-col justify-between">
+            <div className="bg-surface-container-low p-6 rounded-2xl border border-purple-500/20 flex flex-col justify-between">
               <div>
-                <div class="w-10 h-10 rounded-xl bg-secondary-container flex items-center justify-center mb-4 text-white">
-                  <span class="material-symbols-outlined text-xl">confirmation_number</span>
+                <div className="w-10 h-10 rounded-xl bg-secondary-container flex items-center justify-center mb-4 text-white">
+                  <span className="material-symbols-outlined text-xl">confirmation_number</span>
                 </div>
-                <h3 class="text-base font-bold text-on-surface uppercase mb-2">03. Combined Itinerary</h3>
-                <p class="text-xs text-on-surface-variant leading-relaxed mb-4">
+                <h3 className="text-base font-bold text-on-surface uppercase mb-2">03. Combined Itinerary</h3>
+                <p className="text-xs text-on-surface-variant leading-relaxed mb-4">
                   Get full timetables, combined fares, and seamless one-click redirection to verify availability on IRCTC.
                 </p>
               </div>
-              <div class="pt-2 border-t border-purple-500/20 text-[11px] font-mono text-primary">
+              <div className="pt-2 border-t border-purple-500/20 text-[11px] font-mono text-primary">
                 Multi-Leg Journey Synced
               </div>
             </div>
@@ -345,11 +336,10 @@ function LandingView({ onLaunchRailEngine }) {
         </section>
       </main>
 
-      {/* Footer */}
-      <footer class="w-full bg-surface-container-lowest border-t border-purple-500/20 py-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-on-surface-variant">
+      <footer className="w-full bg-surface-container-lowest border-t border-purple-500/20 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-on-surface-variant">
           <div>© 2026 RAIL EAZY PROTOCOL • Autonomous Transit Routing Engine</div>
-          <div class="flex items-center gap-4 font-mono text-[11px]">
+          <div className="flex items-center gap-4 font-mono text-[11px]">
             <span>CORRIDOR: NGP ⇄ NDLS</span>
             <span>IRCTC COMPLIANT TIMETABLES</span>
           </div>
@@ -379,6 +369,8 @@ function RailEngineView({ onBackToLanding }) {
   const [error, setError] = useState(null);
 
   const [selectedLegClasses, setSelectedLegClasses] = useState({});
+  const [drawerRoute, setDrawerRoute] = useState(null);
+  const [toastMessage, setToastMessage] = useState(null);
 
   useEffect(() => {
     async function fetchStations() {
@@ -395,6 +387,11 @@ function RailEngineView({ onBackToLanding }) {
     fetchStations();
     handleSearch('NGP', 'NDLS', preferredClass, maxLayover);
   }, []);
+
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
 
   const handleSearch = async (
     orig = origin,
@@ -456,6 +453,35 @@ function RailEngineView({ onBackToLanding }) {
     }));
   };
 
+  const copySplitItinerary = (route) => {
+    const leg1Choice = selectedLegClasses[route.routeId]?.leg1 || preferredClass;
+    const leg2Choice = selectedLegClasses[route.routeId]?.leg2 || preferredClass;
+    const fare1 = route.leg1.fares[leg1Choice] || 0;
+    const fare2 = route.leg2.fares[leg2Choice] || 0;
+    const totalFare = fare1 + fare2;
+
+    const summaryText = `🚆 RAIL EAZY SPLIT ITINERARY
+Corridor: ${route.leg1.origin} ➔ ${route.leg2.destination} (via ${route.intermediateStation})
+Total Duration: ${route.summary.totalTravelTime} | Est Fare: ₹${totalFare}
+
+[LEG 1] ${route.leg1.trainName} (#${route.leg1.trainNumber})
+Departure: ${route.leg1.origin} at ${route.leg1.departureTime}
+Arrival: ${route.leg1.destination} at ${route.leg1.arrivalTime}
+Class: ${leg1Choice} (₹${fare1})
+
+⏱ LAYOVER AT ${route.intermediateStation}: ${route.layover.formatted}
+
+[LEG 2] ${route.leg2.trainName} (#${route.leg2.trainNumber})
+Departure: ${route.leg2.origin} at ${route.leg2.departureTime}
+Arrival: ${route.leg2.destination} at ${route.leg2.arrivalTime}
+Class: ${leg2Choice} (₹${fare2})
+
+Generated via Rail Eazy (${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'})`;
+
+    navigator.clipboard.writeText(summaryText);
+    showToast('Itinerary copied to clipboard!');
+  };
+
   const formatLayoverHours = (minutes) => {
     const h = Math.floor(minutes / 60);
     const m = minutes % 60;
@@ -483,8 +509,7 @@ function RailEngineView({ onBackToLanding }) {
     });
 
   return (
-    <div className="min-h-screen bg-space-void text-on-surface antialiased text-sm">
-      {/* Return to Portal Banner */}
+    <div className="min-h-screen bg-space-void text-on-surface antialiased text-sm relative">
       <div className="bg-surface-container-high border-b border-purple-500/30 px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between text-xs">
         <button
           onClick={onBackToLanding}
@@ -498,12 +523,9 @@ function RailEngineView({ onBackToLanding }) {
         </span>
       </div>
 
-      {/* Main Search View */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        {/* Search Command Matrix */}
         <section className="relative rounded-2xl bg-surface/90 border border-purple-500/30 p-5 md:p-6 shadow-2xl backdrop-blur-md">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
-            {/* Origin */}
             <div className="lg:col-span-3 bg-surface-container-low p-3.5 rounded-xl border border-purple-500/20">
               <div className="flex items-center justify-between text-[11px] font-mono text-on-surface-variant mb-1 uppercase">
                 <span>Origin Station</span>
@@ -525,7 +547,6 @@ function RailEngineView({ onBackToLanding }) {
               </div>
             </div>
 
-            {/* Swap */}
             <div className="lg:col-span-1 flex justify-center -my-2 lg:my-0 z-10">
               <button
                 onClick={handleSwap}
@@ -536,7 +557,6 @@ function RailEngineView({ onBackToLanding }) {
               </button>
             </div>
 
-            {/* Destination */}
             <div className="lg:col-span-3 bg-surface-container-low p-3.5 rounded-xl border border-purple-500/20">
               <div className="flex items-center justify-between text-[11px] font-mono text-on-surface-variant mb-1 uppercase">
                 <span>Destination Station</span>
@@ -558,7 +578,6 @@ function RailEngineView({ onBackToLanding }) {
               </div>
             </div>
 
-            {/* Departure Info */}
             <div className="lg:col-span-2 bg-surface-container-low p-3.5 rounded-xl border border-purple-500/20">
               <div className="flex items-center justify-between text-[11px] font-mono text-on-surface-variant mb-1 uppercase">
                 <span>Travel Schedule</span>
@@ -567,7 +586,6 @@ function RailEngineView({ onBackToLanding }) {
               <div className="font-bold text-white text-base">Daily Timetable</div>
             </div>
 
-            {/* Search CTA */}
             <div className="lg:col-span-3">
               <button
                 onClick={() => handleSearch()}
@@ -582,9 +600,7 @@ function RailEngineView({ onBackToLanding }) {
             </div>
           </div>
 
-          {/* Travel Class & Layover Slider */}
           <div className="mt-4 pt-4 border-t border-purple-500/20 grid grid-cols-1 md:grid-cols-12 gap-4 items-center bg-surface-container/60 p-3.5 rounded-xl">
-            {/* Preferred Class */}
             <div className="md:col-span-5 flex flex-col gap-1.5">
               <label className="text-[11px] font-mono text-on-surface-variant uppercase flex items-center gap-1.5">
                 <span className="material-symbols-outlined text-sm text-violet-lavender">airline_seat_recline_normal</span>
@@ -598,10 +614,11 @@ function RailEngineView({ onBackToLanding }) {
                       setPreferredClass(cls);
                       handleSearch(origin, destination, cls, maxLayover);
                     }}
-                    className={`px-3 py-1.5 rounded-lg font-mono text-xs transition-colors cursor-pointer ${preferredClass === cls
+                    className={`px-3 py-1.5 rounded-lg font-mono text-xs transition-colors cursor-pointer ${
+                      preferredClass === cls
                         ? 'bg-violet-electric text-white border border-purple-400/40 font-semibold shadow-md shadow-violet-electric/30'
                         : 'bg-surface-container text-on-surface border border-purple-500/20 hover:border-purple-400/40'
-                      }`}
+                    }`}
                   >
                     {cls}
                   </button>
@@ -609,7 +626,6 @@ function RailEngineView({ onBackToLanding }) {
               </div>
             </div>
 
-            {/* Max Layover Buffer Slider */}
             <div className="md:col-span-7 flex flex-col gap-1.5">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-[11px] font-mono text-on-surface-variant flex items-center gap-1.5 uppercase">
@@ -643,14 +659,14 @@ function RailEngineView({ onBackToLanding }) {
           </div>
         )}
 
-        {/* View Tabs */}
         <div className="flex items-center gap-2 border-b border-purple-500/20 pb-2">
           <button
             onClick={() => setActiveTab('split')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${activeTab === 'split'
+            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
+              activeTab === 'split'
                 ? 'bg-violet-electric text-white shadow-md shadow-violet-electric/30 border border-purple-400/30'
                 : 'text-on-surface-variant hover:text-white bg-surface-container-low border border-purple-500/20'
-              }`}
+            }`}
           >
             <span className="material-symbols-outlined text-sm">hub</span>
             <span>Split Routes (Junction Connections)</span>
@@ -661,10 +677,11 @@ function RailEngineView({ onBackToLanding }) {
 
           <button
             onClick={() => setActiveTab('direct')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${activeTab === 'direct'
+            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
+              activeTab === 'direct'
                 ? 'bg-violet-electric text-white shadow-md shadow-violet-electric/30 border border-purple-400/30'
                 : 'text-on-surface-variant hover:text-white bg-surface-container-low border border-purple-500/20'
-              }`}
+            }`}
           >
             <span className="material-symbols-outlined text-sm">straight</span>
             <span>Direct Express Routes</span>
@@ -674,9 +691,7 @@ function RailEngineView({ onBackToLanding }) {
           </button>
         </div>
 
-        {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Filters Sidebar */}
           <aside className="lg:col-span-3 space-y-5">
             <div className="bg-surface/90 rounded-2xl border border-purple-500/20 p-5 space-y-5 backdrop-blur-md">
               <div className="flex items-center justify-between pb-2 border-b border-purple-500/20">
@@ -695,7 +710,6 @@ function RailEngineView({ onBackToLanding }) {
                 </button>
               </div>
 
-              {/* Sort Selection */}
               <div className="space-y-2">
                 <span className="text-[11px] font-mono text-on-surface-variant uppercase tracking-wider block font-semibold">
                   Sort Prioritization
@@ -709,10 +723,11 @@ function RailEngineView({ onBackToLanding }) {
                     <label
                       key={s.id}
                       onClick={() => setSortBy(s.id)}
-                      className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors ${sortBy === s.id
+                      className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors ${
+                        sortBy === s.id
                           ? 'bg-surface-container border border-purple-500/30 text-white font-medium'
                           : 'hover:bg-surface-container-low text-on-surface-variant'
-                        }`}
+                      }`}
                     >
                       <span className="flex items-center gap-2">
                         <span className="material-symbols-outlined text-sm text-violet-electric">{s.icon}</span>
@@ -730,7 +745,6 @@ function RailEngineView({ onBackToLanding }) {
                 </div>
               </div>
 
-              {/* Junction Filter */}
               <div className="space-y-2">
                 <span className="text-[11px] font-mono text-on-surface-variant uppercase tracking-wider block font-semibold">
                   Intermediate Junctions
@@ -738,10 +752,11 @@ function RailEngineView({ onBackToLanding }) {
                 <div className="flex flex-wrap gap-1.5">
                   <button
                     onClick={() => setSelectedJunctionFilter('ALL')}
-                    className={`px-2.5 py-1 rounded-lg font-mono text-xs cursor-pointer ${selectedJunctionFilter === 'ALL'
+                    className={`px-2.5 py-1 rounded-lg font-mono text-xs cursor-pointer ${
+                      selectedJunctionFilter === 'ALL'
                         ? 'bg-violet-electric/40 border border-violet-electric text-white'
                         : 'bg-surface-container border border-purple-500/20 text-on-surface-variant'
-                      }`}
+                    }`}
                   >
                     All Junctions
                   </button>
@@ -749,10 +764,11 @@ function RailEngineView({ onBackToLanding }) {
                     <button
                       key={junc}
                       onClick={() => setSelectedJunctionFilter(junc)}
-                      className={`px-2.5 py-1 rounded-lg font-mono text-xs cursor-pointer ${selectedJunctionFilter === junc
+                      className={`px-2.5 py-1 rounded-lg font-mono text-xs cursor-pointer ${
+                        selectedJunctionFilter === junc
                           ? 'bg-violet-electric/40 border border-violet-electric text-white'
                           : 'bg-surface-container border border-purple-500/20 text-on-surface-variant'
-                        }`}
+                      }`}
                     >
                       {junc}
                     </button>
@@ -762,9 +778,7 @@ function RailEngineView({ onBackToLanding }) {
             </div>
           </aside>
 
-          {/* Results Feed */}
           <section className="lg:col-span-9 space-y-6">
-            {/* Split View */}
             {activeTab === 'split' && (
               <div className="space-y-6">
                 {filteredSplitRoutes.length === 0 && hasSearched && !loading && (
@@ -786,7 +800,6 @@ function RailEngineView({ onBackToLanding }) {
                       key={route.routeId}
                       className="rounded-2xl bg-surface/95 border border-purple-500/30 overflow-hidden shadow-xl hover:border-violet-electric/60 transition-all duration-300"
                     >
-                      {/* Card Header */}
                       <div className="bg-gradient-to-r from-purple-950/80 via-surface-container to-purple-950/50 px-5 py-3 border-b border-purple-500/20 flex flex-wrap items-center justify-between gap-3">
                         <div className="flex items-center gap-2.5 flex-wrap">
                           <span className="font-bold text-white tracking-wide">
@@ -802,7 +815,6 @@ function RailEngineView({ onBackToLanding }) {
                       </div>
 
                       <div className="p-5 md:p-6 space-y-5">
-                        {/* Leg 1 */}
                         <div className="space-y-3">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2.5">
@@ -839,7 +851,6 @@ function RailEngineView({ onBackToLanding }) {
                             </div>
                           </div>
 
-                          {/* Leg 1 Class Chips */}
                           <div className="flex items-center gap-2 flex-wrap text-xs">
                             <span className="font-mono text-[11px] text-on-surface-variant uppercase">Select Class:</span>
                             {Object.entries(route.leg1.fares).map(([clsName, fare]) => {
@@ -849,10 +860,11 @@ function RailEngineView({ onBackToLanding }) {
                                 <button
                                   key={clsName}
                                   onClick={() => pickClass(route.routeId, 'leg1', clsName)}
-                                  className={`px-3 py-1.5 rounded-xl font-medium flex items-center gap-2 transition-all cursor-pointer ${isSelected
+                                  className={`px-3 py-1.5 rounded-xl font-medium flex items-center gap-2 transition-all cursor-pointer ${
+                                    isSelected
                                       ? 'bg-violet-electric text-white border border-purple-400/40 shadow-md'
                                       : 'bg-surface-container text-on-surface border border-purple-500/20 hover:bg-surface-container-high'
-                                    }`}
+                                  }`}
                                 >
                                   <span className="font-bold">{clsName}</span>
                                   <span className="font-mono">₹{fare}</span>
@@ -862,7 +874,6 @@ function RailEngineView({ onBackToLanding }) {
                           </div>
                         </div>
 
-                        {/* Layover Indicator */}
                         <div className="relative py-1 flex flex-col items-center">
                           <div className="w-full bg-surface-container-high rounded-xl p-3 border border-purple-500/30 flex items-center justify-between gap-3 flex-wrap">
                             <div className="flex items-center gap-2.5 text-xs">
@@ -877,7 +888,6 @@ function RailEngineView({ onBackToLanding }) {
                           </div>
                         </div>
 
-                        {/* Leg 2 */}
                         <div className="space-y-3">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2.5">
@@ -914,7 +924,6 @@ function RailEngineView({ onBackToLanding }) {
                             </div>
                           </div>
 
-                          {/* Leg 2 Class Chips */}
                           <div className="flex items-center gap-2 flex-wrap text-xs">
                             <span className="font-mono text-[11px] text-on-surface-variant uppercase">Select Class:</span>
                             {Object.entries(route.leg2.fares).map(([clsName, fare]) => {
@@ -924,10 +933,11 @@ function RailEngineView({ onBackToLanding }) {
                                 <button
                                   key={clsName}
                                   onClick={() => pickClass(route.routeId, 'leg2', clsName)}
-                                  className={`px-3 py-1.5 rounded-xl font-medium flex items-center gap-2 transition-all cursor-pointer ${isSelected
+                                  className={`px-3 py-1.5 rounded-xl font-medium flex items-center gap-2 transition-all cursor-pointer ${
+                                    isSelected
                                       ? 'bg-violet-electric text-white border border-purple-400/40 shadow-md'
                                       : 'bg-surface-container text-on-surface border border-purple-500/20 hover:bg-surface-container-high'
-                                    }`}
+                                  }`}
                                 >
                                   <span className="font-bold">{clsName}</span>
                                   <span className="font-mono">₹{fare}</span>
@@ -937,7 +947,6 @@ function RailEngineView({ onBackToLanding }) {
                           </div>
                         </div>
 
-                        {/* Summary Strip */}
                         <div className="pt-4 border-t border-purple-500/20 flex flex-col sm:flex-row items-center justify-between gap-4">
                           <div className="flex items-center gap-6 w-full sm:w-auto justify-between sm:justify-start">
                             <div>
@@ -962,15 +971,22 @@ function RailEngineView({ onBackToLanding }) {
                           </div>
 
                           <div className="flex items-center gap-2.5 w-full sm:w-auto">
-                            <a
-                              href="https://www.irctc.co.in"
-                              target="_blank"
-                              rel="noopener noreferrer"
+                            <button
+                              onClick={() => copySplitItinerary(route)}
+                              className="px-3.5 py-2.5 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface border border-purple-500/20 font-medium text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                              title="Copy itinerary details to clipboard"
+                            >
+                              <span className="material-symbols-outlined text-sm text-violet-lavender">content_copy</span>
+                              <span>Copy Details</span>
+                            </button>
+
+                            <button
+                              onClick={() => setDrawerRoute(route)}
                               className="flex-1 sm:flex-none px-5 py-2.5 rounded-xl bg-gradient-to-r from-violet-electric to-purple-600 hover:from-purple-500 hover:to-violet-electric text-white text-sm font-bold shadow-lg shadow-violet-electric/30 border border-purple-400/30 flex items-center justify-center gap-2 transition-all cursor-pointer"
                             >
-                              <span className="material-symbols-outlined text-base">open_in_new</span>
-                              <span>Check on IRCTC</span>
-                            </a>
+                              <span className="material-symbols-outlined text-base">shopping_cart_checkout</span>
+                              <span>Open Booking Drawer</span>
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -980,7 +996,6 @@ function RailEngineView({ onBackToLanding }) {
               </div>
             )}
 
-            {/* Direct View */}
             {activeTab === 'direct' && (
               <div className="space-y-4">
                 {directRoutes.length === 0 && hasSearched && !loading && (
@@ -1054,6 +1069,128 @@ function RailEngineView({ onBackToLanding }) {
           </section>
         </div>
       </main>
+
+      {/* Slide-over Booking Drawer */}
+      {drawerRoute && (
+        <div className="fixed inset-0 z-50 flex justify-end bg-black/70 backdrop-blur-sm transition-all">
+          <div className="w-full max-w-md bg-surface-container-lowest border-l border-purple-500/30 h-full p-6 flex flex-col justify-between overflow-y-auto shadow-2xl">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between pb-4 border-b border-purple-500/20">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-primary text-xl">confirmation_number</span>
+                  <span className="font-pixel text-lg text-white font-bold uppercase">Split Booking Guide</span>
+                </div>
+                <button
+                  onClick={() => setDrawerRoute(null)}
+                  className="p-1 rounded-lg hover:bg-surface-container text-on-surface-variant hover:text-white transition-colors cursor-pointer"
+                >
+                  <span className="material-symbols-outlined">close</span>
+                </button>
+              </div>
+
+              <div className="p-3 bg-primary-container/10 border border-primary-container/30 rounded-xl text-xs space-y-1">
+                <div className="font-bold text-primary flex items-center gap-1">
+                  <span className="material-symbols-outlined text-sm">info</span>
+                  Recommended Booking Order:
+                </div>
+                <p className="text-on-surface-variant leading-relaxed">
+                  Book <strong>Leg 2 first</strong> to guarantee the overnight trunk leg into Delhi, then book <strong>Leg 1</strong>.
+                </p>
+              </div>
+
+              {/* Leg 1 Item */}
+              <div className="p-4 bg-surface-container-low rounded-xl border border-purple-500/20 space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="px-2 py-0.5 rounded bg-violet-electric text-white text-[10px] font-mono font-bold">
+                    STEP 1 (ORIGIN LEG)
+                  </span>
+                  <span className="font-mono text-xs text-mint-glow">
+                    {selectedLegClasses[drawerRoute.routeId]?.leg1 || preferredClass}: ₹
+                    {drawerRoute.leg1.fares[selectedLegClasses[drawerRoute.routeId]?.leg1 || preferredClass] || 0}
+                  </span>
+                </div>
+                <div>
+                  <h4 className="font-bold text-white text-sm">
+                    {drawerRoute.leg1.trainName} ({drawerRoute.leg1.trainNumber})
+                  </h4>
+                  <p className="text-xs text-on-surface-variant">
+                    {drawerRoute.leg1.origin} ({drawerRoute.leg1.departureTime}) ➔ {drawerRoute.leg1.destination} ({drawerRoute.leg1.arrivalTime})
+                  </p>
+                </div>
+                <a
+                  href={`https://www.irctc.co.in/nget/train-search`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-2 bg-surface-container hover:bg-violet-electric hover:text-white text-primary text-xs font-mono font-bold rounded-lg border border-purple-500/30 flex items-center justify-center gap-1.5 transition-colors"
+                >
+                  <span>Book Leg 1 on IRCTC</span>
+                  <span className="material-symbols-outlined text-sm">open_in_new</span>
+                </a>
+              </div>
+
+              {/* Transfer Indicator */}
+              <div className="flex items-center gap-2 px-3 py-2 bg-surface-container rounded-xl text-xs font-mono text-violet-lavender justify-center border border-purple-500/20">
+                <span className="material-symbols-outlined text-sm text-amber-warning">timelapse</span>
+                <span>Interchange at {drawerRoute.intermediateStation} ({drawerRoute.layover.formatted})</span>
+              </div>
+
+              {/* Leg 2 Item */}
+              <div className="p-4 bg-surface-container-low rounded-xl border border-purple-500/20 space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="px-2 py-0.5 rounded bg-primary text-on-primary text-[10px] font-mono font-bold">
+                    STEP 2 (CONNECTING LEG)
+                  </span>
+                  <span className="font-mono text-xs text-mint-glow">
+                    {selectedLegClasses[drawerRoute.routeId]?.leg2 || preferredClass}: ₹
+                    {drawerRoute.leg2.fares[selectedLegClasses[drawerRoute.routeId]?.leg2 || preferredClass] || 0}
+                  </span>
+                </div>
+                <div>
+                  <h4 className="font-bold text-white text-sm">
+                    {drawerRoute.leg2.trainName} ({drawerRoute.leg2.trainNumber})
+                  </h4>
+                  <p className="text-xs text-on-surface-variant">
+                    {drawerRoute.leg2.origin} ({drawerRoute.leg2.departureTime}) ➔ {drawerRoute.leg2.destination} ({drawerRoute.leg2.arrivalTime})
+                  </p>
+                </div>
+                <a
+                  href={`https://www.irctc.co.in/nget/train-search`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-2 bg-surface-container hover:bg-violet-electric hover:text-white text-primary text-xs font-mono font-bold rounded-lg border border-purple-500/30 flex items-center justify-center gap-1.5 transition-colors"
+                >
+                  <span>Book Leg 2 on IRCTC</span>
+                  <span className="material-symbols-outlined text-sm">open_in_new</span>
+                </a>
+              </div>
+            </div>
+
+            <div className="pt-6 border-t border-purple-500/20 space-y-3">
+              <button
+                onClick={() => copySplitItinerary(drawerRoute)}
+                className="w-full py-3 bg-surface-container hover:bg-surface-container-high text-white font-mono text-xs font-bold rounded-xl border border-purple-500/30 flex items-center justify-center gap-2 transition-colors cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-base">content_copy</span>
+                <span>Copy Dual-Leg Itinerary</span>
+              </button>
+              <button
+                onClick={() => setDrawerRoute(null)}
+                className="w-full py-2.5 text-on-surface-variant hover:text-white text-xs font-mono transition-colors cursor-pointer"
+              >
+                Close Drawer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Floating Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 bg-surface-container-high border border-purple-500/40 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 animate-fade-in">
+          <span className="material-symbols-outlined text-mint-emerald text-xl">check_circle</span>
+          <span className="text-xs font-mono">{toastMessage}</span>
+        </div>
+      )}
     </div>
   );
 }
@@ -1062,7 +1199,7 @@ function RailEngineView({ onBackToLanding }) {
 // 3. MAIN ROUTER WRAPPER
 // ==============================================================
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState('landing'); // 'landing' | 'railway'
+  const [currentScreen, setCurrentScreen] = useState('landing');
 
   if (currentScreen === 'landing') {
     return <LandingView onLaunchRailEngine={() => setCurrentScreen('railway')} />;

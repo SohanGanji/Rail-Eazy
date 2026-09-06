@@ -319,6 +319,54 @@
                 "1A": 4495,
                 "EC": null
             }
+        },
+        {
+            "trainNumber": "12621",
+            "trainName": "Tamil Nadu Express",
+            "originStation": "BPL",
+            "destinationStation": "NDLS",
+            "departureTime": "21:00",
+            "arrivalTime": "07:05",
+            "departureMinutes": 1260,
+            "arrivalMinutes": 425,
+            "durationMinutes": 605,
+            "distanceKm": 703,
+            "runningDays": [
+                "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"
+            ],
+            "fares": {
+                "2S": 240,
+                "SL": 405,
+                "CC": null,
+                "3A": 1090,
+                "2A": 1560,
+                "1A": 2620,
+                "EC": null
+            }
+        },
+        {
+            "trainNumber": "12627",
+            "trainName": "Karnataka Express",
+            "originStation": "BPL",
+            "destinationStation": "NDLS",
+            "departureTime": "23:30",
+            "arrivalTime": "09:00",
+            "departureMinutes": 1410,
+            "arrivalMinutes": 540,
+            "durationMinutes": 570,
+            "distanceKm": 703,
+            "runningDays": [
+                "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"
+            ],
+            "fares": {
+                "2S": 240,
+                "SL": 405,
+                "CC": null,
+                "3A": 1090,
+                "2A": 1560,
+                "1A": 2620,
+                "EC": null
+            }
         }
     ]
 }
