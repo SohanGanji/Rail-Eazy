@@ -1,111 +1,126 @@
-import React, { useState } from 'react';
-import { Train, Clock, ArrowRight, ChevronDown, ChevronUp, CheckCircle2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Train, Clock, ArrowRight, CheckCircle2 } from 'lucide-react';
+
+const CLASS_OPTIONS = ['SL', '3A', '2A', 'CC'];
 
 export default function DirectRouteCard({ route, preferredClass, onBookClick }) {
-  const [showFares, setShowFares] = useState(false);
-  const { train, summary } = route;
+  const [selectedClass, setSelectedClass] = useState(preferredClass);
 
-  const activeFare = train.fares ? train.fares[preferredClass] : null;
+  useEffect(() => {
+    setSelectedClass(preferredClass);
+  }, [preferredClass]);
+
+  const { train, summary } = route;
+  const currentFare = train.fares ? train.fares[selectedClass] : null;
 
   return (
-    <article className="glass-card route-card" aria-label={`Direct train ${train.trainName}`}>
+    <article className="glass-card p-6 border border-synth-border hover:border-synth-violet transition-all duration-300 relative rounded-2xl bg-synth-card/90 shadow-synth-card">
       {/* Card Header */}
-      <div className="route-card-header">
-        <div className="train-title-group">
-          <span className="route-type-tag direct">
-            <Train size={13} />
+      <div className="flex flex-wrap items-center justify-between pb-4 mb-4 border-b border-synth-border gap-2">
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-synth-violet/20 text-synth-violetLight border border-synth-violet/40">
+            <Train size={13} className="text-synth-violetLight" />
             Direct Route
           </span>
-          <span className="train-number-pill">#{train.trainNumber}</span>
-          <h3 className="train-name-text">{train.trainName}</h3>
+          <span className="px-2.5 py-0.5 rounded-md text-xs font-bold text-white bg-synth-surface border border-synth-border">
+            #{train.trainNumber}
+          </span>
+          <h3 className="text-base font-bold text-white font-display">
+            {train.trainName}
+          </h3>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: '12px', color: '#94a3b8' }}>Total Duration:</span>
-          <span style={{ fontSize: '13px', fontWeight: 700, color: '#f8fafc' }}>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-synth-muted">Total Travel Time:</span>
+          <span className="text-sm font-extrabold text-white font-display bg-synth-surface px-2.5 py-1 rounded-md border border-synth-border">
             {summary.totalTravelTime}
           </span>
         </div>
       </div>
 
-      {/* Journey Timeline Row */}
-      <div className="journey-row">
+      {/* Direct Journey Row */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-center mb-5 bg-synth-surface/60 p-4 rounded-xl border border-synth-border">
         {/* Departure */}
-        <div className="station-time-box">
-          <span className="station-time">{train.departureTime}</span>
-          <span className="station-code">{train.origin}</span>
-          <span className="station-name">Origin Station</span>
+        <div>
+          <div className="text-2xl font-extrabold text-white font-display leading-tight">{train.departureTime}</div>
+          <div className="text-sm font-bold text-synth-violetLight">{train.origin}</div>
+          <div className="text-xs text-synth-muted">Origin Station</div>
         </div>
 
         {/* Center Track */}
-        <div className="duration-connector">
-          <span className="duration-text">
-            <Clock size={12} style={{ display: 'inline', marginRight: '4px' }} />
-            {train.duration} Non-stop
-          </span>
-          <div className="track-line">
-            <div className="track-icon">
-              <Train size={14} />
+        <div className="md:col-span-2 flex flex-col items-center">
+          <div className="text-xs font-semibold text-synth-muted flex items-center gap-1 mb-1">
+            <Clock size={12} />
+            <span>{train.duration} Non-stop</span>
+          </div>
+          <div className="w-full h-0.5 bg-gradient-to-r from-synth-violet via-synth-violetLight to-synth-emerald relative flex items-center justify-center">
+            <div className="w-6 h-6 rounded-full bg-synth-surface border border-synth-violet flex items-center justify-center text-synth-violetLight">
+              <Train size={12} />
             </div>
           </div>
-          <span style={{ fontSize: '10px', color: '#64748b', marginTop: '6px' }}>Direct Corridor</span>
+          <div className="text-[10px] text-synth-dim mt-1.5">Direct Line Corridor</div>
         </div>
 
         {/* Arrival */}
-        <div className="station-time-box" style={{ textAlign: 'right' }}>
-          <span className="station-time">{train.arrivalTime}</span>
-          <span className="station-code">{train.destination}</span>
-          <span className="station-name">Final Destination</span>
+        <div className="md:text-right">
+          <div className="text-2xl font-extrabold text-white font-display leading-tight">{train.arrivalTime}</div>
+          <div className="text-sm font-bold text-synth-emeraldLight">{train.destination}</div>
+          <div className="text-xs text-synth-muted">Final Destination</div>
+        </div>
+      </div>
+
+      {/* Dynamic Class Chips & Fare */}
+      <div className="pt-4 border-t border-synth-border flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-xs text-synth-muted font-semibold">Travel Class:</span>
+          <div className="flex gap-1.5">
+            {CLASS_OPTIONS.map((cls) => {
+              const isSelected = selectedClass === cls;
+              const fare = train.fares ? train.fares[cls] : null;
+              const available = fare !== null && fare !== undefined;
+
+              return (
+                <button
+                  key={cls}
+                  type="button"
+                  onClick={() => setSelectedClass(cls)}
+                  className={`px-2.5 py-1 rounded-md text-xs font-bold transition-all ${
+                    isSelected
+                      ? 'bg-synth-violet text-white shadow-glow-violet scale-105'
+                      : available
+                        ? 'bg-synth-surface text-synth-muted hover:text-white hover:bg-synth-cardHover border border-synth-border'
+                        : 'bg-synth-surface/40 text-synth-dim opacity-50 border border-synth-border/40'
+                  }`}
+                  title={available ? `Switch to ${cls} class (₹${fare})` : `${cls} not available on this train`}
+                >
+                  {cls}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Fare Cell */}
-        <div className="fare-box">
-          <div className="fare-class-tag">{preferredClass} Class Fare</div>
-          <div className="fare-amount">
-            {activeFare ? `₹ ${activeFare.toLocaleString('en-IN')}` : 'N/A'}
+        {/* Fare & Booking */}
+        <div className="flex items-center gap-4">
+          <div className="text-right">
+            <div className="text-[10px] uppercase tracking-wider text-synth-muted">
+              {selectedClass} Class Fare
+            </div>
+            <div className="text-xl font-extrabold text-synth-emeraldLight font-display">
+              {currentFare ? `₹ ${currentFare.toLocaleString('en-IN')}` : 'N/A'}
+            </div>
           </div>
+
           <button
             type="button"
-            className="action-btn"
-            style={{ width: '100%', marginTop: '8px', justifyContent: 'center' }}
-            onClick={() => onBookClick && onBookClick(route)}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-synth-emerald/20 hover:bg-synth-emerald/30 border border-synth-emerald/40 text-synth-emeraldLight text-xs font-bold shadow-glow-emerald transition-all transform hover:-translate-y-0.5"
+            onClick={() => onBookClick && onBookClick({ ...route, activeClass: selectedClass, activeFare: currentFare })}
           >
-            <CheckCircle2 size={15} color="#34d399" />
+            <CheckCircle2 size={14} />
             <span>Book Direct</span>
           </button>
         </div>
       </div>
-
-      {/* Class Fares Toggle */}
-      {train.fares && (
-        <div>
-          <button
-            type="button"
-            className="fare-matrix-toggle"
-            onClick={() => setShowFares(!showFares)}
-          >
-            <span>{showFares ? 'Hide all class fares' : 'View all class fares (SL, 3A, 2A, 1A)'}</span>
-            {showFares ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-          </button>
-
-          {showFares && (
-            <div className="fare-matrix-grid">
-              {Object.entries(train.fares).map(([cls, fare]) => {
-                if (fare === null) return null;
-                const isCurrent = cls === preferredClass;
-                return (
-                  <div key={cls} className={`fare-matrix-item ${isCurrent ? 'selected' : ''}`}>
-                    <span style={{ fontWeight: 700, color: isCurrent ? '#818cf8' : '#94a3b8' }}>
-                      {cls}:
-                    </span>{' '}
-                    <span style={{ color: '#fff' }}>₹ {fare.toLocaleString('en-IN')}</span>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      )}
     </article>
   );
 }

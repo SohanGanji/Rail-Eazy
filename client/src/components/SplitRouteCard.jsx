@@ -1,245 +1,246 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   GitMerge, 
   Clock, 
-  ArrowRight, 
   ShieldCheck, 
   AlertTriangle, 
   Sparkles, 
-  ChevronDown, 
-  ChevronUp,
-  Info,
-  ExternalLink
+  Train,
+  ArrowRight,
+  Info
 } from 'lucide-react';
+
+const CLASS_OPTIONS = ['SL', '3A', '2A', 'CC'];
 
 export default function SplitRouteCard({ 
   route, 
   preferredClass, 
   onOpenGuide 
 }) {
-  const [showBreakdown, setShowBreakdown] = useState(false);
-  const { leg1, leg2, layover, summary, intermediateStation } = route;
+  // Local class state allowing user to re-calculate fare on the fly per card
+  const [selectedClass, setSelectedClass] = useState(preferredClass);
 
-  const fare1 = leg1.selectedFare;
-  const fare2 = leg2.selectedFare;
-  const totalFare = summary.totalFare;
+  useEffect(() => {
+    setSelectedClass(preferredClass);
+  }, [preferredClass]);
+
+  const { leg1, leg2, layover, intermediateStation, summary } = route;
+
+  // Re-calculate fares on the fly based on selectedClass
+  const fare1 = leg1.fares ? leg1.fares[selectedClass] : null;
+  const fare2 = leg2.fares ? leg2.fares[selectedClass] : null;
+  const combinedFare = (fare1 !== null && fare2 !== null && fare1 !== undefined && fare2 !== undefined)
+    ? fare1 + fare2
+    : null;
 
   return (
-    <article className="glass-card route-card" aria-label={`Split route via ${intermediateStation}`}>
-      {/* Route Header */}
-      <div className="route-card-header">
-        <div className="train-title-group" style={{ flexWrap: 'wrap' }}>
-          <span className="route-type-tag split">
-            <GitMerge size={13} />
+    <article className="glass-card p-6 border border-synth-border hover:border-synth-violet transition-all duration-300 relative rounded-2xl bg-synth-card/90 shadow-synth-card">
+      {/* Top Header */}
+      <div className="flex flex-wrap items-center justify-between pb-4 mb-4 border-b border-synth-border gap-2">
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-synth-violet/20 text-synth-violetLight border border-synth-violet/40">
+            <GitMerge size={14} className="text-synth-violetLight" />
             Split Route (2 Legs)
           </span>
-          <span style={{ 
-            display: 'inline-flex', 
-            alignItems: 'center', 
-            gap: '4px',
-            fontSize: '11px', 
-            color: '#34d399', 
-            background: 'rgba(16, 185, 129, 0.1)', 
-            padding: '2px 8px', 
-            borderRadius: '6px',
-            border: '1px solid rgba(16, 185, 129, 0.2)' 
-          }}>
-            <Sparkles size={12} />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-synth-emerald/15 text-synth-emeraldLight border border-synth-emerald/30">
+            <Sparkles size={13} />
             Bypasses Direct Waitlist
           </span>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: '12px', color: '#94a3b8' }}>Total Journey Time:</span>
-          <span style={{ fontSize: '14px', fontWeight: 800, color: '#f8fafc' }}>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-synth-muted">Total Travel Time:</span>
+          <span className="text-sm font-extrabold text-white font-display bg-synth-surface px-2.5 py-1 rounded-md border border-synth-border">
             {summary.totalTravelTime}
           </span>
         </div>
       </div>
 
-      {/* 2-Legs Container */}
-      <div className="split-legs-container">
-        {/* Leg 1 */}
-        <div className="split-leg-card">
-          <div className="leg-train-meta">
-            <div className="leg-tag">Leg 1 • Connecting Train</div>
-            <div className="leg-train-num">#{leg1.trainNumber}</div>
-            <div className="leg-train-name" title={leg1.trainName}>{leg1.trainName}</div>
-          </div>
-
-          <div className="leg-timeline-row">
-            <div className="leg-time-item">
-              <span className="leg-time">{leg1.departureTime}</span>
-              <span className="leg-station-code">{leg1.origin}</span>
+      {/* 2-Leg Journey Details */}
+      <div className="flex flex-col gap-3 mb-5">
+        {/* Leg 1 Card */}
+        <div className="bg-synth-surface/80 border border-synth-border rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="min-w-[180px]">
+            <div className="text-[10px] font-bold uppercase tracking-widest text-synth-violetLight mb-0.5">
+              Leg 1 • Connecting
             </div>
-
-            <div className="leg-middle-track">
-              <span className="leg-duration-badge">{leg1.duration}</span>
-              <div className="track-line" style={{ height: '2px' }} />
+            <div className="text-sm font-bold text-white flex items-center gap-1.5">
+              <Train size={14} className="text-synth-violet" />
+              <span>#{leg1.trainNumber}</span>
             </div>
-
-            <div className="leg-time-item" style={{ textAlign: 'right' }}>
-              <span className="leg-time">{leg1.arrivalTime}</span>
-              <span className="leg-station-code">{leg1.destination} (Junction)</span>
+            <div className="text-xs text-synth-muted truncate max-w-[200px]" title={leg1.trainName}>
+              {leg1.trainName}
             </div>
           </div>
 
-          <div className="leg-fare-cell">
-            <div style={{ fontSize: '10px', color: '#94a3b8' }}>{preferredClass} Fare</div>
-            <div className="leg-fare-val">
+          <div className="flex-1 flex items-center justify-between gap-3 max-w-md">
+            <div>
+              <div className="text-lg font-extrabold text-white font-display leading-tight">{leg1.departureTime}</div>
+              <div className="text-xs font-bold text-synth-violetLight">{leg1.origin}</div>
+            </div>
+
+            <div className="flex-1 flex flex-col items-center px-2">
+              <span className="text-[11px] text-synth-muted font-medium mb-1">{leg1.duration}</span>
+              <div className="w-full h-0.5 bg-gradient-to-r from-synth-violet to-synth-violetLight relative flex items-center justify-center">
+                <div className="w-2 h-2 rounded-full bg-synth-violet" />
+              </div>
+            </div>
+
+            <div className="text-right">
+              <div className="text-lg font-extrabold text-white font-display leading-tight">{leg1.arrivalTime}</div>
+              <div className="text-xs font-bold text-synth-violetLight">{leg1.destination} (Jct)</div>
+            </div>
+          </div>
+
+          <div className="text-right md:min-w-[90px] border-t md:border-t-0 md:border-l border-synth-border pt-2 md:pt-0 md:pl-4">
+            <div className="text-[10px] text-synth-muted uppercase font-medium">{selectedClass} Fare</div>
+            <div className="text-base font-bold text-synth-emeraldLight">
               {fare1 ? `₹ ${fare1.toLocaleString('en-IN')}` : 'N/A'}
             </div>
           </div>
         </div>
 
-        {/* Transfer Junction & Layover Banner */}
-        <div className={`layover-hub-banner ${layover.isSafe ? '' : 'tight'}`}>
-          <div className="layover-hub-left">
-            <div className="transfer-hub-icon">
+        {/* Intermediate Junction Layover Badge */}
+        <div className={`flex items-center justify-between p-3 rounded-xl border border-dashed gap-3 transition-colors ${
+          layover.isSafe 
+            ? 'bg-synth-emerald/10 border-synth-emerald/40 text-synth-emeraldLight' 
+            : 'bg-synth-amber/10 border-synth-amber/40 text-synth-amber'
+        }`}>
+          <div className="flex items-center gap-2.5">
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+              layover.isSafe ? 'bg-synth-emerald/20 text-synth-emeraldLight' : 'bg-synth-amber/20 text-synth-amber'
+            }`}>
               {layover.isSafe ? <ShieldCheck size={18} /> : <AlertTriangle size={18} />}
             </div>
             <div>
-              <div className="layover-hub-title">
+              <div className="text-xs font-bold text-white">
                 Transfer at {intermediateStation} Junction
               </div>
-              <div className="layover-hub-subtitle">
+              <div className="text-[11px] text-synth-muted">
                 Arrival {leg1.arrivalTime} → Departure {leg2.departureTime}
               </div>
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div className="layover-status-badge">
+          <div className="flex items-center gap-2">
+            <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold ${
+              layover.isSafe ? 'bg-synth-emerald/20 text-synth-emeraldLight' : 'bg-synth-amber/20 text-synth-amber'
+            }`}>
               <Clock size={13} />
               <span>{layover.formatted} Layover</span>
             </div>
-            <span style={{ 
-              fontSize: '11px', 
-              color: layover.isSafe ? '#34d399' : '#fbbf24',
-              fontWeight: 600,
-              display: 'none',
-              '@media (min-width: 600px)': { display: 'inline' }
-            }}>
-              {layover.isSafe ? 'Safe Transfer Buffer' : 'Tight Transfer Window'}
+            <span className="hidden sm:inline text-xs font-semibold">
+              {layover.isSafe ? '(Safe Buffer >60m)' : '(Tight Buffer <60m)'}
             </span>
           </div>
         </div>
 
-        {/* Leg 2 */}
-        <div className="split-leg-card">
-          <div className="leg-train-meta">
-            <div className="leg-tag" style={{ color: '#06b6d4' }}>Leg 2 • Forward Train</div>
-            <div className="leg-train-num">#{leg2.trainNumber}</div>
-            <div className="leg-train-name" title={leg2.trainName}>{leg2.trainName}</div>
-          </div>
-
-          <div className="leg-timeline-row">
-            <div className="leg-time-item">
-              <span className="leg-time">{leg2.departureTime}</span>
-              <span className="leg-station-code">{leg2.origin} (Junction)</span>
+        {/* Leg 2 Card */}
+        <div className="bg-synth-surface/80 border border-synth-border rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="min-w-[180px]">
+            <div className="text-[10px] font-bold uppercase tracking-widest text-synth-emeraldLight mb-0.5">
+              Leg 2 • Forward
             </div>
-
-            <div className="leg-middle-track">
-              <span className="leg-duration-badge">{leg2.duration}</span>
-              <div className="track-line" style={{ height: '2px', background: 'linear-gradient(90deg, #06b6d4, #10b981)' }} />
+            <div className="text-sm font-bold text-white flex items-center gap-1.5">
+              <Train size={14} className="text-synth-emerald" />
+              <span>#{leg2.trainNumber}</span>
             </div>
-
-            <div className="leg-time-item" style={{ textAlign: 'right' }}>
-              <span className="leg-time">{leg2.arrivalTime}</span>
-              <span className="leg-station-code">{leg2.destination}</span>
+            <div className="text-xs text-synth-muted truncate max-w-[200px]" title={leg2.trainName}>
+              {leg2.trainName}
             </div>
           </div>
 
-          <div className="leg-fare-cell">
-            <div style={{ fontSize: '10px', color: '#94a3b8' }}>{preferredClass} Fare</div>
-            <div className="leg-fare-val">
+          <div className="flex-1 flex items-center justify-between gap-3 max-w-md">
+            <div>
+              <div className="text-lg font-extrabold text-white font-display leading-tight">{leg2.departureTime}</div>
+              <div className="text-xs font-bold text-synth-emeraldLight">{leg2.origin} (Jct)</div>
+            </div>
+
+            <div className="flex-1 flex flex-col items-center px-2">
+              <span className="text-[11px] text-synth-muted font-medium mb-1">{leg2.duration}</span>
+              <div className="w-full h-0.5 bg-gradient-to-r from-synth-violetLight to-synth-emerald relative flex items-center justify-center">
+                <div className="w-2 h-2 rounded-full bg-synth-emerald" />
+              </div>
+            </div>
+
+            <div className="text-right">
+              <div className="text-lg font-extrabold text-white font-display leading-tight">{leg2.arrivalTime}</div>
+              <div className="text-xs font-bold text-synth-emeraldLight">{leg2.destination}</div>
+            </div>
+          </div>
+
+          <div className="text-right md:min-w-[90px] border-t md:border-t-0 md:border-l border-synth-border pt-2 md:pt-0 md:pl-4">
+            <div className="text-[10px] text-synth-muted uppercase font-medium">{selectedClass} Fare</div>
+            <div className="text-base font-bold text-synth-emeraldLight">
               {fare2 ? `₹ ${fare2.toLocaleString('en-IN')}` : 'N/A'}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Summary Footer */}
-      <div className="split-summary-footer">
-        <div className="summary-benefit-note">
-          <ShieldCheck size={16} />
-          <span>
-            Split-Ticket Advantage: Confirmed berths in both legs bypass end-to-end RAC/Waitlist
-          </span>
+      {/* Dynamic Class Selector Chips & On-The-Fly Fare Recalculation */}
+      <div className="pt-4 border-t border-synth-border flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-xs text-synth-muted font-semibold">Recalculate Fare:</span>
+          <div className="flex gap-1.5">
+            {CLASS_OPTIONS.map((cls) => {
+              const isSelected = selectedClass === cls;
+              const f1 = leg1.fares ? leg1.fares[cls] : null;
+              const f2 = leg2.fares ? leg2.fares[cls] : null;
+              const available = f1 !== null && f2 !== null && f1 !== undefined && f2 !== undefined;
+
+              return (
+                <button
+                  key={cls}
+                  type="button"
+                  onClick={() => setSelectedClass(cls)}
+                  className={`px-2.5 py-1 rounded-md text-xs font-bold transition-all ${
+                    isSelected
+                      ? 'bg-synth-violet text-white shadow-glow-violet scale-105'
+                      : available
+                        ? 'bg-synth-surface text-synth-muted hover:text-white hover:bg-synth-cardHover border border-synth-border'
+                        : 'bg-synth-surface/40 text-synth-dim opacity-50 border border-synth-border/40'
+                  }`}
+                  title={available ? `Switch to ${cls} class` : `${cls} not available on both legs`}
+                >
+                  {cls}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        <div className="summary-fare-group">
-          <div className="combined-fare-box">
-            <div className="combined-fare-label">
-              Combined Total Fare ({preferredClass})
+        {/* Combined Total Fare & Action */}
+        <div className="flex items-center gap-4">
+          <div className="text-right">
+            <div className="text-[10px] uppercase tracking-wider text-synth-muted">
+              Combined Total ({selectedClass})
             </div>
-            <div className="combined-fare-val">
-              {totalFare ? (
+            <div className="text-xl font-extrabold text-synth-emeraldLight font-display">
+              {combinedFare !== null ? (
                 <>
-                  ₹ {totalFare.toLocaleString('en-IN')}
+                  ₹ {combinedFare.toLocaleString('en-IN')}
                   {fare1 && fare2 && (
-                    <span style={{ fontSize: '12px', fontWeight: 500, color: '#94a3b8', marginLeft: '6px' }}>
+                    <span className="text-xs font-normal text-synth-muted ml-1.5">
                       (₹{fare1} + ₹{fare2})
                     </span>
                   )}
                 </>
-              ) : 'Class N/A'}
+              ) : (
+                <span className="text-sm font-medium text-synth-muted">Class N/A</span>
+              )}
             </div>
           </div>
 
           <button
             type="button"
-            className="action-btn"
-            style={{ 
-              background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(6, 182, 212, 0.2))',
-              borderColor: 'rgba(16, 185, 129, 0.4)',
-              color: '#fff'
-            }}
-            onClick={() => onOpenGuide && onOpenGuide(route)}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-synth-violet hover:bg-synth-violetLight text-white text-xs font-bold shadow-glow-violet transition-all transform hover:-translate-y-0.5"
+            onClick={() => onOpenGuide && onOpenGuide({ ...route, activeClass: selectedClass, activeTotalFare: combinedFare })}
           >
-            <Info size={15} color="#34d399" />
+            <Info size={14} />
             <span>How to Book</span>
           </button>
         </div>
-      </div>
-
-      {/* Class Fares Toggle for both legs */}
-      <div>
-        <button
-          type="button"
-          className="fare-matrix-toggle"
-          onClick={() => setShowBreakdown(!showBreakdown)}
-        >
-          <span>{showBreakdown ? 'Hide class fare breakdown' : 'Compare fares across classes (SL, 3A, 2A)'}</span>
-          {showBreakdown ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-        </button>
-
-        {showBreakdown && (
-          <div style={{ marginTop: '12px', padding: '12px', background: 'rgba(0,0,0,0.25)', borderRadius: '8px' }}>
-            <div style={{ fontSize: '11px', fontWeight: 600, color: '#94a3b8', marginBottom: '8px' }}>
-              Segment Fare Matrix (Leg 1: #{leg1.trainNumber} + Leg 2: #{leg2.trainNumber})
-            </div>
-            <div className="fare-matrix-grid">
-              {['SL', '3A', '2A', '1A', 'CC', '2S'].map((cls) => {
-                const f1 = leg1.fares ? leg1.fares[cls] : null;
-                const f2 = leg2.fares ? leg2.fares[cls] : null;
-                if (!f1 && !f2) return null;
-                const total = (f1 || 0) + (f2 || 0);
-                const isCurrent = cls === preferredClass;
-                return (
-                  <div key={cls} className={`fare-matrix-item ${isCurrent ? 'selected' : ''}`}>
-                    <span style={{ fontWeight: 700, color: isCurrent ? '#818cf8' : '#94a3b8' }}>
-                      {cls}:
-                    </span>{' '}
-                    <span style={{ color: '#fff' }}>
-                      {f1 && f2 ? `₹ ${total.toLocaleString('en-IN')} (₹${f1} + ₹${f2})` : 'Segment N/A'}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
       </div>
     </article>
   );

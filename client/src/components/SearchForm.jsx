@@ -1,29 +1,25 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { 
   MapPin, 
   ArrowRightLeft, 
   Search, 
-  SlidersHorizontal, 
   Clock, 
   Sparkles, 
-  ShieldAlert,
-  TrainTrack
+  Sliders
 } from 'lucide-react';
 
-const TRAVEL_CLASSES = [
-  { code: 'SL', name: 'Sleeper', tag: 'Budget' },
-  { code: '3A', name: 'AC 3 Tier', tag: 'Popular' },
-  { code: 'CC', name: 'AC Chair Car', tag: 'Day Trips' },
-  { code: '2A', name: 'AC 2 Tier', tag: 'Comfort' },
-  { code: '1A', name: 'First AC', tag: 'Premium' },
-  { code: '2S', name: 'Second Sitting', tag: 'Economy' }
+const CLASS_OPTIONS = [
+  { code: 'SL', name: 'Sleeper' },
+  { code: '3A', name: 'AC 3 Tier' },
+  { code: '2A', name: 'AC 2 Tier' },
+  { code: 'CC', name: 'AC Chair Car' }
 ];
 
 const ROUTE_PRESETS = [
-  { origin: 'NGP', dest: 'NZM', label: 'Nagpur → Delhi (NZM)', hint: '3 Split Routes Available' },
-  { origin: 'NGP', dest: 'NDLS', label: 'Nagpur → New Delhi (NDLS)', hint: 'Direct Rajdhani' },
-  { origin: 'BPL', dest: 'NDLS', label: 'Bhopal → New Delhi', hint: 'Shatabdi & GT Express' },
-  { origin: 'NGP', dest: 'BPL', label: 'Nagpur → Bhopal', hint: 'Vande Bharat Express' }
+  { origin: 'NGP', dest: 'NZM', label: 'Nagpur → Delhi (NZM)' },
+  { origin: 'NGP', dest: 'NDLS', label: 'Nagpur → New Delhi (NDLS)' },
+  { origin: 'BPL', dest: 'NDLS', label: 'Bhopal → New Delhi' },
+  { origin: 'NGP', dest: 'BPL', label: 'Nagpur → Bhopal' }
 ];
 
 export default function SearchForm({
@@ -32,10 +28,6 @@ export default function SearchForm({
   setOrigin,
   destination,
   setDestination,
-  intermediate,
-  setIntermediate,
-  minLayover,
-  setMinLayover,
   maxLayover,
   setMaxLayover,
   preferredClass,
@@ -43,11 +35,6 @@ export default function SearchForm({
   onSearch,
   loading
 }) {
-  const [showAdvanced, setShowAdvanced] = useState(false);
-
-  // Filter out junction stations for intermediate filter dropdown
-  const junctionStations = stations.filter(s => s.isJunction);
-
   const handleSwap = () => {
     const temp = origin;
     setOrigin(destination);
@@ -57,13 +44,13 @@ export default function SearchForm({
   const handlePresetSelect = (preset) => {
     setOrigin(preset.origin);
     setDestination(preset.dest);
-    onSearch(preset.origin, preset.dest, intermediate, minLayover, maxLayover, preferredClass);
+    onSearch(preset.origin, preset.dest, maxLayover, preferredClass);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!origin || !destination) return;
-    onSearch(origin, destination, intermediate, minLayover, maxLayover, preferredClass);
+    onSearch(origin, destination, maxLayover, preferredClass);
   };
 
   const formatMins = (m) => {
@@ -75,12 +62,15 @@ export default function SearchForm({
   };
 
   return (
-    <section className="glass-card search-card" aria-label="Railway Search">
-      {/* Quick Presets */}
-      <div className="presets-bar">
-        <span className="presets-label">
-          <Sparkles size={14} color="#818cf8" />
-          Corridor Presets:
+    <section className="glass-card p-6 md:p-8 mb-8 relative rounded-2xl bg-synth-card/90 border border-synth-border shadow-synth-card overflow-hidden">
+      {/* Top ambient line */}
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-synth-violet via-synth-emerald to-synth-violetLight" />
+
+      {/* Preset Chips */}
+      <div className="flex items-center gap-2 flex-wrap mb-6">
+        <span className="text-xs font-bold text-synth-muted flex items-center gap-1.5 mr-1">
+          <Sparkles size={14} className="text-synth-violetLight" />
+          Quick Routes:
         </span>
         {ROUTE_PRESETS.map((p, idx) => {
           const isActive = origin === p.origin && destination === p.dest;
@@ -88,35 +78,37 @@ export default function SearchForm({
             <button
               key={idx}
               type="button"
-              className={`preset-chip ${isActive ? 'active' : ''}`}
+              className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
+                isActive
+                  ? 'bg-synth-violet text-white shadow-glow-violet'
+                  : 'bg-synth-surface text-synth-muted hover:text-white hover:bg-synth-cardHover border border-synth-border'
+              }`}
               onClick={() => handlePresetSelect(p)}
-              title={p.hint}
             >
-              <span>{p.label}</span>
-              <span style={{ fontSize: '10px', opacity: 0.7 }}>• {p.hint}</span>
+              {p.label}
             </button>
           );
         })}
       </div>
 
       <form onSubmit={handleSubmit}>
-        {/* Origin / Swap / Destination Grid */}
-        <div className="search-grid">
-          {/* Origin Station */}
-          <div className="form-group">
-            <label className="form-label" htmlFor="origin-select">
-              <MapPin size={15} color="#6366f1" />
+        {/* Origin / Swap / Destination */}
+        <div className="grid grid-cols-1 md:grid-cols-[1fr,auto,1fr] gap-4 items-end mb-6">
+          {/* Origin */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-bold text-synth-muted flex items-center gap-1.5" htmlFor="origin-select">
+              <MapPin size={14} className="text-synth-violetLight" />
               Origin Station
             </label>
-            <div className="select-wrapper">
+            <div className="relative">
               <select
                 id="origin-select"
-                className="station-select"
+                className="w-full bg-synth-surface border border-synth-border text-white px-4 py-3.5 rounded-xl font-semibold outline-none focus:border-synth-violet focus:ring-2 focus:ring-synth-violet/20 transition-all cursor-pointer appearance-none"
                 value={origin}
                 onChange={(e) => setOrigin(e.target.value)}
                 required
               >
-                <option value="" disabled>Select departure station</option>
+                <option value="" disabled>Select origin</option>
                 {stations.map((s) => (
                   <option 
                     key={s.code} 
@@ -133,29 +125,29 @@ export default function SearchForm({
           {/* Swap Button */}
           <button
             type="button"
-            className="swap-btn"
+            className="h-12 w-12 md:w-12 mx-auto flex items-center justify-center bg-synth-surface border border-synth-border rounded-xl text-synth-muted hover:text-synth-violetLight hover:border-synth-violet hover:rotate-180 transition-all duration-300 shadow-sm"
             onClick={handleSwap}
-            title="Swap Origin and Destination"
-            aria-label="Swap Origin and Destination stations"
+            title="Swap stations"
+            aria-label="Swap Origin and Destination"
           >
             <ArrowRightLeft size={18} />
           </button>
 
-          {/* Destination Station */}
-          <div className="form-group">
-            <label className="form-label" htmlFor="destination-select">
-              <MapPin size={15} color="#06b6d4" />
+          {/* Destination */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-bold text-synth-muted flex items-center gap-1.5" htmlFor="destination-select">
+              <MapPin size={14} className="text-synth-emeraldLight" />
               Destination Station
             </label>
-            <div className="select-wrapper">
+            <div className="relative">
               <select
                 id="destination-select"
-                className="station-select"
+                className="w-full bg-synth-surface border border-synth-border text-white px-4 py-3.5 rounded-xl font-semibold outline-none focus:border-synth-emerald focus:ring-2 focus:ring-synth-emerald/20 transition-all cursor-pointer appearance-none"
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
                 required
               >
-                <option value="" disabled>Select arrival station</option>
+                <option value="" disabled>Select destination</option>
                 {stations.map((s) => (
                   <option 
                     key={s.code} 
@@ -168,141 +160,81 @@ export default function SearchForm({
               </select>
             </div>
           </div>
-
-          {/* Intermediate Junction Optional Filter */}
-          <div className="form-group">
-            <label className="form-label" htmlFor="intermediate-select">
-              <TrainTrack size={15} color="#10b981" />
-              Transfer Junction (Optional)
-            </label>
-            <div className="select-wrapper">
-              <select
-                id="intermediate-select"
-                className="station-select"
-                value={intermediate || ''}
-                onChange={(e) => setIntermediate(e.target.value || null)}
-              >
-                <option value="">Any Transfer Junction (Auto)</option>
-                {junctionStations.map((s) => (
-                  <option 
-                    key={s.code} 
-                    value={s.code}
-                    disabled={s.code === origin || s.code === destination}
-                  >
-                    Via {s.code} — {s.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
         </div>
 
-        {/* Dynamic Class Selection & Layover Controls */}
-        <div className="advanced-filters">
-          {/* Dynamic Travel Class Selection */}
-          <div className="form-group">
-            <label className="form-label">
-              Travel Class Selection
+        {/* Class Selector & Max Layover Slider */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-synth-border mb-6">
+          {/* Class selector buttons (SL, 3A, 2A, CC) */}
+          <div className="flex flex-col gap-2">
+            <label className="text-xs font-bold text-synth-muted">
+              Travel Class Selector
             </label>
-            <div className="classes-list" role="radiogroup" aria-label="Preferred Class">
-              {TRAVEL_CLASSES.map((cls) => {
+            <div className="grid grid-cols-4 gap-2">
+              {CLASS_OPTIONS.map((cls) => {
                 const isSelected = preferredClass === cls.code;
                 return (
                   <button
                     key={cls.code}
                     type="button"
-                    role="radio"
-                    aria-checked={isSelected}
-                    className={`class-pill ${isSelected ? 'active' : ''}`}
                     onClick={() => setPreferredClass(cls.code)}
+                    className={`py-2.5 px-2 rounded-xl text-xs font-bold transition-all flex flex-col items-center justify-center gap-0.5 ${
+                      isSelected
+                        ? 'bg-synth-violet text-white border border-synth-violetLight shadow-glow-violet'
+                        : 'bg-synth-surface text-synth-muted hover:text-white hover:bg-synth-cardHover border border-synth-border'
+                    }`}
                   >
-                    <span>{cls.code}</span>
-                    <span className="class-subtext">{cls.name}</span>
+                    <span className="text-sm">{cls.code}</span>
+                    <span className="text-[10px] font-normal opacity-80">{cls.name}</span>
                   </button>
                 );
               })}
             </div>
           </div>
 
-          {/* Layover Buffer Controls */}
-          <div className="slider-container">
-            <div className="slider-header">
-              <span className="form-label">
-                <Clock size={15} color="#22d3ee" />
-                Transfer Layover Buffer Window
-              </span>
-              <span className="slider-values">
-                {formatMins(minLayover)} to {formatMins(maxLayover)}
+          {/* Max Layover Range Slider (45 to 360 mins) */}
+          <div className="flex flex-col justify-between gap-2">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold text-synth-muted flex items-center gap-1.5" htmlFor="max-layover-slider">
+                <Clock size={14} className="text-synth-emeraldLight" />
+                Max Transfer Layover Buffer
+              </label>
+              <span className="text-xs font-extrabold text-synth-emeraldLight bg-synth-emerald/10 border border-synth-emerald/30 px-2.5 py-0.5 rounded-md">
+                Up to {formatMins(maxLayover)} ({maxLayover} mins)
               </span>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#94a3b8', marginBottom: '4px' }}>
-                  <span>Min Transfer Time (Safety Buffer)</span>
-                  <span style={{ color: minLayover >= 60 ? '#34d399' : '#fbbf24', fontWeight: 600 }}>
-                    {formatMins(minLayover)} {minLayover >= 60 ? '(Safe)' : '(Tight)'}
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min="30"
-                  max="120"
-                  step="15"
-                  value={minLayover}
-                  onChange={(e) => {
-                    const val = parseInt(e.target.value, 10);
-                    setMinLayover(val);
-                    if (val > maxLayover) setMaxLayover(val + 30);
-                  }}
-                  className="range-slider"
-                  aria-label="Minimum layover buffer"
-                />
+            <div>
+              <input
+                id="max-layover-slider"
+                type="range"
+                min="45"
+                max="360"
+                step="15"
+                value={maxLayover}
+                onChange={(e) => setMaxLayover(parseInt(e.target.value, 10))}
+                className="range-slider cursor-pointer w-full"
+                aria-label="Max transfer layover duration"
+              />
+              <div className="flex justify-between text-[11px] text-synth-dim mt-1.5 font-medium">
+                <span>45m (Min safe)</span>
+                <span>2h 00m</span>
+                <span>4h 00m</span>
+                <span>6h 00m (Max ceiling)</span>
               </div>
-
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#94a3b8', marginBottom: '4px' }}>
-                  <span>Max Allowable Layover Duration</span>
-                  <span style={{ color: '#38bdf8', fontWeight: 600 }}>
-                    {formatMins(maxLayover)} (Ceiling)
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min="120"
-                  max="480"
-                  step="30"
-                  value={maxLayover}
-                  onChange={(e) => {
-                    const val = parseInt(e.target.value, 10);
-                    setMaxLayover(val);
-                    if (val < minLayover) setMinLayover(val - 30);
-                  }}
-                  className="range-slider"
-                  aria-label="Maximum allowable layover"
-                />
-              </div>
-            </div>
-
-            <div className="slider-ticks">
-              <span>30m quick hop</span>
-              <span>2h standard</span>
-              <span>4h relaxed</span>
-              <span>8h max transfer</span>
             </div>
           </div>
         </div>
 
-        {/* Submit Button */}
-        <div className="search-action-row">
+        {/* Search Routes Submit Button */}
+        <div className="flex justify-end">
           <button
             type="submit"
-            className="btn-primary"
+            className="w-full md:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-xl bg-gradient-to-r from-synth-violet to-synth-violetLight hover:from-synth-violetDark hover:to-synth-violet text-white font-bold font-display shadow-glow-violet transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             disabled={loading || !origin || !destination}
             id="search-routes-btn"
           >
             <Search size={18} />
-            <span>{loading ? 'Analyzing Direct & Split Routes...' : 'Search Direct & Split Routes'}</span>
+            <span>{loading ? 'Analyzing Routes...' : 'Search Routes'}</span>
           </button>
         </div>
       </form>

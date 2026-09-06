@@ -7,68 +7,78 @@ export default function RouteFilters({
   directCount = 0,
   splitCount = 0,
   sortBy,
-  setSortBy,
-  query
+  setSortBy
 }) {
-  const totalCount = directCount + splitCount;
-
   return (
-    <div className="route-controls-bar">
-      {/* View Tabs */}
-      <div className="view-tabs" role="tablist" aria-label="Route Types">
+    <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+      {/* Two main tabs: Split Routes and Direct Routes */}
+      <div className="flex bg-synth-surface p-1 rounded-xl border border-synth-border" role="tablist">
         <button
           type="button"
           role="tab"
-          aria-selected={activeTab === 'all'}
-          className={`view-tab ${activeTab === 'all' ? 'active' : ''}`}
-          onClick={() => setActiveTab('all')}
+          aria-selected={activeTab === 'split'}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs md:text-sm font-bold transition-all ${
+            activeTab === 'split'
+              ? 'bg-synth-card text-white shadow-glow-emerald border border-synth-emerald/40'
+              : 'text-synth-muted hover:text-white'
+          }`}
+          onClick={() => setActiveTab('split')}
         >
-          <Layers size={16} />
-          <span>All Options</span>
-          <span className="tab-badge">{totalCount}</span>
+          <GitMerge size={16} className="text-synth-emeraldLight" />
+          <span>Split Routes</span>
+          <span className="px-2 py-0.5 rounded-full text-xs font-extrabold bg-synth-emerald/20 text-synth-emeraldLight border border-synth-emerald/30">
+            {splitCount}
+          </span>
         </button>
 
         <button
           type="button"
           role="tab"
           aria-selected={activeTab === 'direct'}
-          className={`view-tab ${activeTab === 'direct' ? 'active' : ''}`}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs md:text-sm font-bold transition-all ${
+            activeTab === 'direct'
+              ? 'bg-synth-card text-white shadow-glow-violet border border-synth-violet/40'
+              : 'text-synth-muted hover:text-white'
+          }`}
           onClick={() => setActiveTab('direct')}
         >
-          <Train size={16} />
-          <span>Direct Trains</span>
-          <span className="tab-badge">{directCount}</span>
+          <Train size={16} className="text-synth-violetLight" />
+          <span>Direct Routes</span>
+          <span className="px-2 py-0.5 rounded-full text-xs font-extrabold bg-synth-violet/20 text-synth-violetLight border border-synth-violet/30">
+            {directCount}
+          </span>
         </button>
 
         <button
           type="button"
           role="tab"
-          aria-selected={activeTab === 'split'}
-          className={`view-tab ${activeTab === 'split' ? 'active' : ''}`}
-          onClick={() => setActiveTab('split')}
+          aria-selected={activeTab === 'all'}
+          className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs md:text-sm font-medium transition-all ${
+            activeTab === 'all'
+              ? 'bg-synth-card text-white border border-synth-border'
+              : 'text-synth-dim hover:text-synth-muted'
+          }`}
+          onClick={() => setActiveTab('all')}
         >
-          <GitMerge size={16} color="#34d399" />
-          <span>Smart Split Routes</span>
-          <span className="tab-badge highlight">
-            {splitCount} Bypass Available
-          </span>
+          <Layers size={14} />
+          <span>All ({directCount + splitCount})</span>
         </button>
       </div>
 
       {/* Sort Select */}
-      <div className="sort-group">
-        <ArrowUpDown size={15} color="#94a3b8" />
-        <label htmlFor="sort-routes" className="sort-label">Sort By:</label>
+      <div className="flex items-center gap-2">
+        <ArrowUpDown size={14} className="text-synth-muted" />
+        <label htmlFor="sort-routes" className="text-xs text-synth-muted font-semibold">Sort By:</label>
         <select
           id="sort-routes"
-          className="sort-select"
+          className="bg-synth-surface border border-synth-border text-white text-xs px-3 py-2 rounded-lg font-medium outline-none focus:border-synth-violet cursor-pointer"
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
         >
-          <option value="duration">Fastest Journey (Duration)</option>
+          <option value="duration">Fastest Total Time</option>
           <option value="fare">Lowest Total Fare</option>
-          <option value="departure">Earliest Departure Time</option>
-          <option value="layover">Shortest Transfer Layover</option>
+          <option value="departure">Earliest Departure</option>
+          <option value="layover">Shortest Layover</option>
         </select>
       </div>
     </div>
