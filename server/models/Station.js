@@ -20,7 +20,11 @@ const stationSchema = new mongoose.Schema({
     },
     state: {
         type: String,
-        required: true
+        required: false
+    },
+    zone: {
+        type: String,
+        required: false
     },
     isJunction: {
         type: Boolean,
