@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const trainSchema = new mongoose.Schema({
   trainNumber: { type: String, required: true, unique: true },
   trainName: { type: String, required: true },
-  origin: { type: String, required: true },
-  destination: { type: String, required: true },
+  origin: { type: String, required: true, index: true },
+  destination: { type: String, required: true, index: true },
   departureTime: { type: String, required: true },
   arrivalTime: { type: String, required: true },
   duration: { type: String, required: true },
@@ -28,5 +28,8 @@ const trainSchema = new mongoose.Schema({
     dayOffset: Number
   }]
 }, { timestamps: true });
+
+trainSchema.index({ 'stops.stationCode': 1 });
+trainSchema.index({ origin: 1, destination: 1 });
 
 module.exports = mongoose.models.Train || mongoose.model('Train', trainSchema);

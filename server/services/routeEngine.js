@@ -3,8 +3,8 @@ const Train = require('../models/Train');
 
 function timeToMinutes(timeStr) {
     if (!timeStr) return 0;
-    const [h, m] = timeStr.split(':').map(Number);
-    return (h || 0) * 60 + (m || 0);
+    const parts = timeStr.split(':').map(Number);
+    return (parts[0] || 0) * 60 + (parts[1] || 0);
 }
 
 function formatDuration(minutes) {
@@ -13,65 +13,134 @@ function formatDuration(minutes) {
     return `${h}h ${String(m).padStart(2, '0')}m`;
 }
 
-function normalizeTrain(doc) {
-    const raw = doc.toObject ? doc.toObject() : doc;
-    const origin = (raw.origin || raw.originStation || '').toUpperCase();
-    const destination = (raw.destination || raw.destinationStation || '').toUpperCase();
-    const depMinutes = raw.departureMinutes !== undefined ? raw.departureMinutes : timeToMinutes(raw.departureTime);
-    const arrMinutes = raw.arrivalMinutes !== undefined ? raw.arrivalMinutes : timeToMinutes(raw.arrivalTime);
-    const durMinutes = raw.durationMinutes !== undefined ? raw.durationMinutes : (arrMinutes >= depMinutes ? arrMinutes - depMinutes : 1440 - depMinutes + arrMinutes);
-    const duration = raw.duration || formatDuration(durMinutes);
+function extractSegment(trainDoc, fromCode, toCode) {
+    const raw = trainDoc.toObject ? trainDoc.toObject() : trainDoc;
+    fromCode = fromCode.toUpperCase();
+    toCode = toCode.toUpperCase();
 
-    return {
-        trainNumber: raw.trainNumber,
-        trainName: raw.trainName,
-        origin,
-        destination,
-        departureTime: raw.departureTime,
-        arrivalTime: raw.arrivalTime,
-        departureMinutes: depMinutes,
-        arrivalMinutes: arrMinutes,
-        durationMinutes: durMinutes,
-        duration,
-        fares: raw.fares || {},
-        stops: raw.stops || []
-    };
+    const tOrig = (raw.origin || raw.originStation || '').toUpperCase();
+    const tDest = (raw.destination || raw.destinationStation || '').toUpperCase();
+
+    // 1. Direct origin-destination
+    if (tOrig === fromCode && tDest === toCode) {
+        const depTime = (raw.departureTime || '08:00').slice(0, 5);
+        const arrTime = (raw.arrivalTime || '20:00').slice(0, 5);
+        const depMinutes = raw.departureMinutes !== undefined ? raw.departureMinutes : timeToMinutes(depTime);
+        const arrMinutes = raw.arrivalMinutes !== undefined ? raw.arrivalMinutes : timeToMinutes(arrTime);
+        const durMinutes = raw.durationMinutes || (arrMinutes >= depMinutes ? arrMinutes - depMinutes : 1440 - depMinutes + arrMinutes);
+
+        return {
+            trainNumber: raw.trainNumber,
+            trainName: raw.trainName,
+            origin: fromCode,
+            destination: toCode,
+            departureTime: depTime,
+            arrivalTime: arrTime,
+            departureMinutes: depMinutes,
+            arrivalMinutes: arrMinutes,
+            durationMinutes: durMinutes,
+            duration: formatDuration(durMinutes),
+            fares: raw.fares || {}
+        };
+    }
+
+    // 2. Stop-to-stop extraction
+    if (raw.stops && raw.stops.length > 0) {
+        const fromStop = raw.stops.find(s => s.stationCode === fromCode);
+        const toStop = raw.stops.find(s => s.stationCode === toCode);
+        if (fromStop && toStop) {
+            const fromIdx = raw.stops.indexOf(fromStop);
+            const toIdx = raw.stops.indexOf(toStop);
+            if (fromIdx < toIdx) {
+                const depTimeStr = (fromStop.departureTime && fromStop.departureTime !== 'None') 
+                    ? fromStop.departureTime 
+                    : (fromStop.arrivalTime || raw.departureTime || '08:00');
+                const arrTimeStr = (toStop.arrivalTime && toStop.arrivalTime !== 'None') 
+                    ? toStop.arrivalTime 
+                    : (toStop.departureTime || raw.arrivalTime || '20:00');
+
+                const depTime = depTimeStr.slice(0, 5);
+                const arrTime = arrTimeStr.slice(0, 5);
+                const depMinutes = timeToMinutes(depTime);
+                const arrMinutes = timeToMinutes(arrTime);
+                const durMinutes = arrMinutes >= depMinutes ? arrMinutes - depMinutes : 1440 - depMinutes + arrMinutes;
+
+                return {
+                    trainNumber: raw.trainNumber,
+                    trainName: raw.trainName,
+                    origin: fromCode,
+                    destination: toCode,
+                    departureTime: depTime,
+                    arrivalTime: arrTime,
+                    departureMinutes: depMinutes,
+                    arrivalMinutes: arrMinutes,
+                    durationMinutes: durMinutes,
+                    duration: formatDuration(durMinutes),
+                    fares: raw.fares || {}
+                };
+            }
+        }
+    }
+
+    return null;
 }
+
+const TRAIN_FIELDS = 'trainNumber trainName origin destination departureTime arrivalTime duration durationMinutes fares stops';
 
 async function findDirectRoutes(origin, destination, preferredClass = '3A') {
     const orig = origin.toUpperCase();
     const dest = destination.toUpperCase();
 
-    let rawTrains = await Train.find({ origin: orig, destination: dest });
-    if (!rawTrains.length) {
-        rawTrains = await Schedule.find({ originStation: orig, destinationStation: dest });
+    // Query Train collection with stop awareness
+    let candidates = await Train.find({
+        $or: [
+            { origin: orig, destination: dest },
+            { 'stops.stationCode': { $all: [orig, dest] } }
+        ]
+    }, TRAIN_FIELDS);
+
+    if (!candidates.length) {
+        candidates = await Schedule.find({ originStation: orig, destinationStation: dest });
     }
 
-    return rawTrains.map(normalizeTrain).map(train => {
-        const selectedFare = train.fares[preferredClass] || null;
-        return {
-            routeId: `DIRECT_${train.trainNumber}`,
-            routeType: 'direct',
-            train: {
-                trainNumber: train.trainNumber,
-                trainName: train.trainName,
-                origin: train.origin,
-                destination: train.destination,
-                departureTime: train.departureTime,
-                arrivalTime: train.arrivalTime,
-                duration: train.duration,
-                fares: train.fares,
-                selectedClass: preferredClass,
-                selectedFare
-            },
-            summary: {
-                totalDurationMinutes: train.durationMinutes,
-                totalTravelTime: train.duration,
-                totalFare: selectedFare
-            }
-        };
-    });
+    const directRoutes = [];
+    const seenTrains = new Set();
+
+    for (const doc of candidates) {
+        const seg = extractSegment(doc, orig, dest);
+        if (seg && !seenTrains.has(seg.trainNumber)) {
+            seenTrains.add(seg.trainNumber);
+            const selectedFare = seg.fares[preferredClass] || null;
+            directRoutes.push({
+                routeId: `DIRECT_${seg.trainNumber}`,
+                routeType: 'direct',
+                train: {
+                    trainNumber: seg.trainNumber,
+                    trainName: seg.trainName,
+                    origin: seg.origin,
+                    destination: seg.destination,
+                    departureTime: seg.departureTime,
+                    arrivalTime: seg.arrivalTime,
+                    duration: seg.duration,
+                    fares: seg.fares,
+                    selectedClass: preferredClass,
+                    selectedFare
+                },
+                summary: {
+                    totalDurationMinutes: seg.durationMinutes,
+                    totalTravelTime: seg.duration,
+                    totalFare: selectedFare
+                }
+            });
+        }
+    }
+
+    directRoutes.sort((a, b) => a.summary.totalDurationMinutes - b.summary.totalDurationMinutes);
+    return directRoutes;
 }
+
+// Major strategic corridor junctions
+const COMMON_JUNCTIONS = ['BPL', 'ET', 'VGLJ'];
 
 async function findSplitRoutes({
     origin,
@@ -83,93 +152,111 @@ async function findSplitRoutes({
 }) {
     const originCode = origin.toUpperCase();
     const destCode = destination.toUpperCase();
-    const intermediateCode = intermediate ? intermediate.toUpperCase() : null;
 
-    const useTrainModel = (await Train.countDocuments()) > 0;
-
-    let leg1Trains = [];
-    if (useTrainModel) {
-        const query = { origin: originCode };
-        if (intermediateCode) query.destination = intermediateCode;
-        leg1Trains = (await Train.find(query)).map(normalizeTrain);
-    } else {
-        const query = { originStation: originCode };
-        if (intermediateCode) query.destinationStation = intermediateCode;
-        leg1Trains = (await Schedule.find(query)).map(normalizeTrain);
-    }
-
+    const junctionsToTry = intermediate ? [intermediate.toUpperCase()] : COMMON_JUNCTIONS;
     const validSplitRoutes = [];
+    const seenPairs = new Set();
 
-    for (const trainA of leg1Trains) {
-        const junctionStation = trainA.destination;
-        if (junctionStation === destCode) continue;
+    const junctionPromises = junctionsToTry.map(async (junction) => {
+        if (junction === originCode || junction === destCode) return [];
 
-        let leg2Trains = [];
-        if (useTrainModel) {
-            leg2Trains = (await Train.find({ origin: junctionStation, destination: destCode })).map(normalizeTrain);
-        } else {
-            leg2Trains = (await Schedule.find({ originStation: junctionStation, destinationStation: destCode })).map(normalizeTrain);
+        const [leg1Candidates, leg2Candidates] = await Promise.all([
+            Train.find({
+                $or: [
+                    { origin: originCode, destination: junction },
+                    { 'stops.stationCode': { $all: [originCode, junction] } }
+                ]
+            }, TRAIN_FIELDS).lean(),
+            Train.find({
+                $or: [
+                    { origin: junction, destination: destCode },
+                    { 'stops.stationCode': { $all: [junction, destCode] } }
+                ]
+            }, TRAIN_FIELDS).lean()
+        ]);
+
+        const leg1Segments = leg1Candidates
+            .map(t => extractSegment(t, originCode, junction))
+            .filter(Boolean);
+
+        const leg2Segments = leg2Candidates
+            .map(t => extractSegment(t, junction, destCode))
+            .filter(Boolean);
+
+        const routesForJunction = [];
+
+        for (const segA of leg1Segments) {
+            for (const segB of leg2Segments) {
+                if (segA.trainNumber === segB.trainNumber) continue;
+
+                let layoverMinutes = 0;
+                if (segB.departureMinutes >= segA.arrivalMinutes) {
+                    layoverMinutes = segB.departureMinutes - segA.arrivalMinutes;
+                } else {
+                    layoverMinutes = (1440 - segA.arrivalMinutes) + segB.departureMinutes;
+                }
+
+                if (layoverMinutes >= minLayoverMinutes && layoverMinutes <= maxLayoverMinutes) {
+                    const pairKey = `${segA.trainNumber}_${junction}_${segB.trainNumber}`;
+                    if (seenPairs.has(pairKey)) continue;
+                    seenPairs.add(pairKey);
+
+                    const totalDuration = segA.durationMinutes + layoverMinutes + segB.durationMinutes;
+                    const fareA = segA.fares[preferredClass] || null;
+                    const fareB = segB.fares[preferredClass] || null;
+                    const totalFare = (fareA !== null && fareB !== null) ? fareA + fareB : null;
+
+                    routesForJunction.push({
+                        routeId: `SPLIT_${segA.trainNumber}_${junction}_${segB.trainNumber}`,
+                        routeType: 'split',
+                        intermediateStation: junction,
+                        layover: {
+                            durationMinutes: layoverMinutes,
+                            formatted: formatDuration(layoverMinutes),
+                            isSafe: layoverMinutes >= 60
+                        },
+                        leg1: {
+                            trainNumber: segA.trainNumber,
+                            trainName: segA.trainName,
+                            origin: segA.origin,
+                            destination: segA.destination,
+                            departureTime: segA.departureTime,
+                            arrivalTime: segA.arrivalTime,
+                            duration: segA.duration,
+                            fares: segA.fares,
+                            selectedClass: preferredClass,
+                            selectedFare: fareA
+                        },
+                        leg2: {
+                            trainNumber: segB.trainNumber,
+                            trainName: segB.trainName,
+                            origin: segB.origin,
+                            destination: segB.destination,
+                            departureTime: segB.departureTime,
+                            arrivalTime: segB.arrivalTime,
+                            duration: segB.duration,
+                            fares: segB.fares,
+                            selectedClass: preferredClass,
+                            selectedFare: fareB
+                        },
+                        summary: {
+                            totalDurationMinutes: totalDuration,
+                            totalTravelTime: formatDuration(totalDuration),
+                            totalFare
+                        }
+                    });
+                }
+            }
         }
 
-        for (const trainB of leg2Trains) {
-            let layoverMinutes = 0;
-            if (trainB.departureMinutes >= trainA.arrivalMinutes) {
-                layoverMinutes = trainB.departureMinutes - trainA.arrivalMinutes;
-            } else {
-                layoverMinutes = (1440 - trainA.arrivalMinutes) + trainB.departureMinutes;
-            }
+        return routesForJunction;
+    });
 
-            if (layoverMinutes >= minLayoverMinutes && layoverMinutes <= maxLayoverMinutes) {
-                const totalDuration = trainA.durationMinutes + layoverMinutes + trainB.durationMinutes;
-                const fareA = trainA.fares[preferredClass] || null;
-                const fareB = trainB.fares[preferredClass] || null;
-                const totalFare = (fareA !== null && fareB !== null) ? fareA + fareB : null;
-
-                validSplitRoutes.push({
-                    routeId: `SPLIT_${trainA.trainNumber}_${junctionStation}_${trainB.trainNumber}`,
-                    routeType: 'split',
-                    intermediateStation: junctionStation,
-                    layover: {
-                        durationMinutes: layoverMinutes,
-                        formatted: formatDuration(layoverMinutes),
-                        isSafe: layoverMinutes >= 60
-                    },
-                    leg1: {
-                        trainNumber: trainA.trainNumber,
-                        trainName: trainA.trainName,
-                        origin: trainA.origin,
-                        destination: trainA.destination,
-                        departureTime: trainA.departureTime,
-                        arrivalTime: trainA.arrivalTime,
-                        duration: trainA.duration,
-                        fares: trainA.fares,
-                        selectedClass: preferredClass,
-                        selectedFare: fareA
-                    },
-                    leg2: {
-                        trainNumber: trainB.trainNumber,
-                        trainName: trainB.trainName,
-                        origin: trainB.origin,
-                        destination: trainB.destination,
-                        departureTime: trainB.departureTime,
-                        arrivalTime: trainB.arrivalTime,
-                        duration: trainB.duration,
-                        fares: trainB.fares,
-                        selectedClass: preferredClass,
-                        selectedFare: fareB
-                    },
-                    summary: {
-                        totalDurationMinutes: totalDuration,
-                        totalTravelTime: formatDuration(totalDuration),
-                        totalFare
-                    }
-                });
-            }
-        }
-    }
+    const results = await Promise.all(junctionPromises);
+    results.forEach(routes => validSplitRoutes.push(...routes));
 
     validSplitRoutes.sort((a, b) => a.summary.totalDurationMinutes - b.summary.totalDurationMinutes);
-    return validSplitRoutes;
+    return validSplitRoutes.slice(0, 50); // Top 50 best connections
 }
 
 module.exports = {
