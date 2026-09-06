@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: "class",
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -7,30 +8,29 @@ export default {
   theme: {
     extend: {
       colors: {
-        synth: {
-          bg: '#100c1a',
-          surface: '#181228',
-          card: '#1f1735',
-          cardHover: '#281e46',
-          border: 'rgba(123, 81, 223, 0.25)',
-          violet: '#7b51df',
-          violetLight: '#9b76f5',
-          violetDark: '#5c37b8',
-          emerald: '#10b981',
-          emeraldLight: '#34d399',
-          amber: '#f59e0b',
-        }
+        "space-void": "#0c0816",
+        "background": "#100c1a",
+        "surface": "#15111f",
+        "surface-container-low": "#1e1928",
+        "surface-container": "#221d2c",
+        "surface-container-high": "#2c2837",
+        "surface-container-highest": "#373242",
+        "violet-electric": "#7b51df",
+        "violet-glow": "#9366ff",
+        "violet-lavender": "#a28add",
+        "mint-emerald": "#10b981",
+        "mint-glow": "#34d399",
+        "amber-warning": "#f59e0b",
+        "on-surface": "#e8dff4",
+        "on-surface-variant": "#cbc3d6",
+        "outline-glow": "rgba(123, 81, 223, 0.25)"
       },
       fontFamily: {
-        display: ['Outfit', 'sans-serif'],
-        sans: ['Inter', 'sans-serif'],
-      },
-      boxShadow: {
-        'glow-violet': '0 0 20px rgba(123, 81, 223, 0.35)',
-        'glow-emerald': '0 0 20px rgba(16, 185, 129, 0.35)',
-        'synth-card': '0 10px 30px -5px rgba(0, 0, 0, 0.6), 0 0 1px 1px rgba(123, 81, 223, 0.2)'
+        pixel: ['"Pixelify Sans"', 'cursive', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'monospace'],
+        sans: ['"Inter"', 'sans-serif'],
       }
-    },
+    }
   },
   plugins: [],
 }
