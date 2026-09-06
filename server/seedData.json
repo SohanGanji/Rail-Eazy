@@ -1,0 +1,324 @@
+{
+    "stations": [
+        {
+            "code": "NGP",
+            "name": "Nagpur Junction",
+            "city": "Nagpur",
+            "state": "Maharashtra",
+            "isJunction": true,
+            "platforms": 8
+        },
+        {
+            "code": "ET",
+            "name": "Itarsi Junction",
+            "city": "Itarsi",
+            "state": "Madhya Pradesh",
+            "isJunction": true,
+            "platforms": 7
+        },
+        {
+            "code": "BPL",
+            "name": "Bhopal Junction",
+            "city": "Bhopal",
+            "state": "Madhya Pradesh",
+            "isJunction": true,
+            "platforms": 6
+        },
+        {
+            "code": "VGLJ",
+            "name": "Virangana Lakshmibai Jhansi Junction",
+            "city": "Jhansi",
+            "state": "Uttar Pradesh",
+            "isJunction": true,
+            "platforms": 8
+        },
+        {
+            "code": "GWL",
+            "name": "Gwalior Junction",
+            "city": "Gwalior",
+            "state": "Madhya Pradesh",
+            "isJunction": true,
+            "platforms": 5
+        },
+        {
+            "code": "NDLS",
+            "name": "New Delhi Railway Station",
+            "city": "New Delhi",
+            "state": "Delhi",
+            "isJunction": true,
+            "platforms": 16
+        },
+        {
+            "code": "NZM",
+            "name": "Hazrat Nizamuddin",
+            "city": "New Delhi",
+            "state": "Delhi",
+            "isJunction": false,
+            "platforms": 9
+        }
+    ],
+    "schedules": [
+        {
+            "trainNumber": "20825",
+            "trainName": "Bilaspur - Nagpur - Bhopal Vande Bharat Express",
+            "originStation": "NGP",
+            "destinationStation": "BPL",
+            "departureTime": "14:05",
+            "arrivalTime": "19:25",
+            "departureMinutes": 845,
+            "arrivalMinutes": 1165,
+            "durationMinutes": 320,
+            "distanceKm": 390,
+            "runningDays": [
+                "MON",
+                "TUE",
+                "WED",
+                "THU",
+                "FRI",
+                "SUN"
+            ],
+            "fares": {
+                "2S": null,
+                "SL": null,
+                "CC": 1065,
+                "3A": null,
+                "2A": null,
+                "1A": null,
+                "EC": 2040
+            }
+        },
+        {
+            "trainNumber": "12615",
+            "trainName": "Grand Trunk Express",
+            "originStation": "NGP",
+            "destinationStation": "BPL",
+            "departureTime": "11:50",
+            "arrivalTime": "18:40",
+            "departureMinutes": 710,
+            "arrivalMinutes": 1120,
+            "durationMinutes": 410,
+            "distanceKm": 390,
+            "runningDays": [
+                "MON",
+                "TUE",
+                "WED",
+                "THU",
+                "FRI",
+                "SAT",
+                "SUN"
+            ],
+            "fares": {
+                "2S": 160,
+                "SL": 270,
+                "CC": null,
+                "3A": 730,
+                "2A": 1040,
+                "1A": 1740,
+                "EC": null
+            }
+        },
+        {
+            "trainNumber": "12723",
+            "trainName": "Telangana Express",
+            "originStation": "NGP",
+            "destinationStation": "BPL",
+            "departureTime": "15:25",
+            "arrivalTime": "21:50",
+            "departureMinutes": 925,
+            "arrivalMinutes": 1310,
+            "durationMinutes": 385,
+            "distanceKm": 390,
+            "runningDays": [
+                "MON",
+                "TUE",
+                "WED",
+                "THU",
+                "FRI",
+                "SAT",
+                "SUN"
+            ],
+            "fares": {
+                "2S": null,
+                "SL": 270,
+                "CC": null,
+                "3A": 730,
+                "2A": 1040,
+                "1A": 1740,
+                "EC": null
+            }
+        },
+        {
+            "trainNumber": "12807",
+            "trainName": "Samata Express",
+            "originStation": "NGP",
+            "destinationStation": "ET",
+            "departureTime": "07:35",
+            "arrivalTime": "12:45",
+            "departureMinutes": 455,
+            "arrivalMinutes": 765,
+            "durationMinutes": 310,
+            "distanceKm": 298,
+            "runningDays": [
+                "TUE",
+                "WED",
+                "THU",
+                "SAT",
+                "SUN"
+            ],
+            "fares": {
+                "2S": 135,
+                "SL": 225,
+                "CC": null,
+                "3A": 615,
+                "2A": 880,
+                "1A": 1475,
+                "EC": null
+            }
+        },
+        {
+            "trainNumber": "12001",
+            "trainName": "New Delhi Rani Kamalapati Shatabdi Express",
+            "originStation": "BPL",
+            "destinationStation": "NDLS",
+            "departureTime": "15:15",
+            "arrivalTime": "23:50",
+            "departureMinutes": 915,
+            "arrivalMinutes": 1430,
+            "durationMinutes": 515,
+            "distanceKm": 703,
+            "runningDays": [
+                "MON",
+                "TUE",
+                "WED",
+                "THU",
+                "FRI",
+                "SAT",
+                "SUN"
+            ],
+            "fares": {
+                "2S": null,
+                "SL": null,
+                "CC": 1380,
+                "3A": null,
+                "2A": null,
+                "1A": null,
+                "EC": 2420
+            }
+        },
+        {
+            "trainNumber": "12615",
+            "trainName": "Grand Trunk Express",
+            "originStation": "BPL",
+            "destinationStation": "NDLS",
+            "departureTime": "18:50",
+            "arrivalTime": "06:35",
+            "departureMinutes": 1130,
+            "arrivalMinutes": 395,
+            "durationMinutes": 705,
+            "distanceKm": 703,
+            "runningDays": [
+                "MON",
+                "TUE",
+                "WED",
+                "THU",
+                "FRI",
+                "SAT",
+                "SUN"
+            ],
+            "fares": {
+                "2S": 240,
+                "SL": 405,
+                "CC": null,
+                "3A": 1090,
+                "2A": 1560,
+                "1A": 2620,
+                "EC": null
+            }
+        },
+        {
+            "trainNumber": "12155",
+            "trainName": "Shaan-e-Bhopal SF Express",
+            "originStation": "BPL",
+            "destinationStation": "NZM",
+            "departureTime": "22:40",
+            "arrivalTime": "07:55",
+            "departureMinutes": 1360,
+            "arrivalMinutes": 475,
+            "durationMinutes": 555,
+            "distanceKm": 697,
+            "runningDays": [
+                "MON",
+                "TUE",
+                "WED",
+                "THU",
+                "FRI",
+                "SAT",
+                "SUN"
+            ],
+            "fares": {
+                "2S": 235,
+                "SL": 395,
+                "CC": null,
+                "3A": 1060,
+                "2A": 1520,
+                "1A": 2550,
+                "EC": null
+            }
+        },
+        {
+            "trainNumber": "12721",
+            "trainName": "Dakshin Superfast Express",
+            "originStation": "ET",
+            "destinationStation": "NZM",
+            "departureTime": "14:10",
+            "arrivalTime": "04:00",
+            "departureMinutes": 850,
+            "arrivalMinutes": 240,
+            "durationMinutes": 830,
+            "distanceKm": 790,
+            "runningDays": [
+                "MON",
+                "TUE",
+                "WED",
+                "THU",
+                "FRI",
+                "SAT",
+                "SUN"
+            ],
+            "fares": {
+                "2S": 265,
+                "SL": 445,
+                "CC": null,
+                "3A": 1195,
+                "2A": 1715,
+                "1A": 2885,
+                "EC": null
+            }
+        },
+        {
+            "trainNumber": "12441",
+            "trainName": "Bilaspur New Delhi Rajdhani Express",
+            "originStation": "NGP",
+            "destinationStation": "NDLS",
+            "departureTime": "21:30",
+            "arrivalTime": "10:40",
+            "departureMinutes": 1290,
+            "arrivalMinutes": 640,
+            "durationMinutes": 790,
+            "distanceKm": 1093,
+            "runningDays": [
+                "MON",
+                "THU"
+            ],
+            "fares": {
+                "2S": null,
+                "SL": null,
+                "CC": null,
+                "3A": 2180,
+                "2A": 3020,
+                "1A": 4495,
+                "EC": null
+            }
+        }
+    ]
+}
