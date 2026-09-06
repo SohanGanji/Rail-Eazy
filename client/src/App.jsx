@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import LandingPage from './components/LandingPage';
 import { getStations, searchRoutes, getHealth } from './services/api';
 
 const STATION_ZONES = {
@@ -22,10 +23,13 @@ const STATION_PLATFORMS = {
 };
 
 export default function App() {
+  // 'landing' is the start page; 'engine' is the full search matrix
+  const [currentView, setCurrentView] = useState('landing');
+
   const [backendStatus, setBackendStatus] = useState('checking');
   const [stations, setStations] = useState([]);
   const [origin, setOrigin] = useState('NGP');
-  const [destination, setDestination] = useState('NDLS');
+  const [destination, setDestination] = useState('NZM');
   const [selectedDate, setSelectedDate] = useState('24 OCT 2024');
   const [preferredClass, setPreferredClass] = useState('3A');
   const [maxLayover, setMaxLayover] = useState(240); // in minutes
@@ -35,15 +39,14 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Tab & Filters
+  // Tab & Filters in Engine
   const [activeTab, setActiveTab] = useState('split'); // 'split' | 'direct'
   const [sortBy, setSortBy] = useState('fastest'); // 'fastest' | 'lowest' | 'shortest'
-  const [selectedJunctionFilter, setSelectedJunctionFilter] = useState(null); // 'BPL' | 'ET' | 'VGLJ' | null
+  const [selectedJunctionFilter, setSelectedJunctionFilter] = useState(null);
   const [layoverRanges, setLayoverRanges] = useState({ '1to2': true, '2to4': true, '4plus': true });
   const [showTransferMap, setShowTransferMap] = useState(null);
 
-  // Per-route card class selection state for recalculating fares on the fly:
-  // e.g. { [routeId]: { leg1Class: 'CC', leg2Class: '3A' } }
+  // Per-route card class selection state for on-the-fly fare calculation
   const [cardClassSelections, setCardClassSelections] = useState({});
 
   useEffect(() => {
@@ -55,8 +58,8 @@ export default function App() {
         const stationsData = await getStations();
         setStations(stationsData);
 
-        // Run default search for NGP -> NDLS / NZM
-        executeSearch('NGP', 'NDLS', 240, '3A');
+        // Pre-fetch routes in background
+        executeSearch('NGP', 'NZM', 240, '3A');
       } catch (err) {
         console.error('Init error:', err);
         setError('Failed to connect to backend on localhost:5000');
@@ -88,10 +91,8 @@ export default function App() {
         setDirectRoutes(data.directRoutes || []);
         setSplitRoutes(data.splitRoutes || []);
 
-        // Initialize default class selections for each card
         const initialSelections = {};
         (data.splitRoutes || []).forEach(r => {
-          // Find first available class on leg1 and leg2
           const leg1Available = Object.keys(r.leg1.fares || {}).find(k => r.leg1.fares[k] !== null) || pClass;
           const leg2Available = Object.keys(r.leg2.fares || {}).find(k => r.leg2.fares[k] !== null) || pClass;
           initialSelections[r.routeId] = {
@@ -117,6 +118,16 @@ export default function App() {
     }
   };
 
+  const handleLaunchEngine = (orig = null, dest = null) => {
+    if (orig && dest) {
+      setOrigin(orig);
+      setDestination(dest);
+      executeSearch(orig, dest, maxLayover, preferredClass);
+    }
+    setCurrentView('engine');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleSwapStations = () => {
     const temp = origin;
     setOrigin(destination);
@@ -135,7 +146,6 @@ export default function App() {
     return `${h}h ${m > 0 ? String(m).padStart(2, '0') + 'm' : '00m'}`;
   };
 
-  // On-the-fly card class pick
   const handlePickCardClass = (routeId, legKey, className) => {
     setCardClassSelections(prev => ({
       ...prev,
@@ -146,16 +156,13 @@ export default function App() {
     }));
   };
 
-  // Filtered and sorted split routes
   const filteredSplitRoutes = useMemo(() => {
     let list = [...splitRoutes];
 
-    // Filter by intermediate junction if selected
     if (selectedJunctionFilter) {
       list = list.filter(r => r.intermediateStation === selectedJunctionFilter);
     }
 
-    // Filter by layover time range
     list = list.filter(r => {
       const mins = r.layover.durationMinutes;
       if (mins >= 60 && mins <= 120 && layoverRanges['1to2']) return true;
@@ -164,7 +171,6 @@ export default function App() {
       return false;
     });
 
-    // Sort
     return list.sort((a, b) => {
       if (sortBy === 'fastest') {
         return a.summary.totalDurationMinutes - b.summary.totalDurationMinutes;
@@ -182,16 +188,30 @@ export default function App() {
   }, [splitRoutes, selectedJunctionFilter, layoverRanges, sortBy]);
 
   const originStationObj = stations.find(s => s.code === origin) || { code: origin, name: 'Nagpur Junction', city: 'Nagpur' };
-  const destStationObj = stations.find(s => s.code === destination) || { code: destination, name: 'New Delhi', city: 'New Delhi' };
+  const destStationObj = stations.find(s => s.code === destination) || { code: destination, name: 'Hazrat Nizamuddin', city: 'Delhi' };
 
+  // If on landing view, render the start page
+  if (currentView === 'landing') {
+    return (
+      <LandingPage 
+        onLaunchEngine={handleLaunchEngine}
+        backendStatus={backendStatus}
+      />
+    );
+  }
+
+  // Otherwise, render the active Rail Transit Matrix
   return (
     <div className="min-h-screen cyber-grid antialiased text-sm text-on-surface">
       {/* ================= TOP NAV BAR ================= */}
       <header className="sticky top-0 z-50 bg-[#100c1a]/90 backdrop-blur-xl border-b border-purple-500/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
-          {/* Brand & Corridor Status */}
           <div className="flex items-center gap-6">
-            <a className="flex items-center gap-3 group" href="#">
+            <button 
+              className="flex items-center gap-3 group text-left cursor-pointer"
+              onClick={() => setCurrentView('landing')}
+              title="Return to Start Page"
+            >
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-electric to-purple-800 flex items-center justify-center text-white glow-box-violet border border-purple-400/40 group-hover:scale-105 transition-transform">
                 <span className="material-symbols-outlined text-2xl text-violet-200">train</span>
               </div>
@@ -202,49 +222,50 @@ export default function App() {
                 </div>
                 <p className="text-[11px] font-mono text-on-surface-variant">Multi-Leg Rail Transit Planner</p>
               </div>
-            </a>
+            </button>
 
-            {/* Corridor Indicator */}
             <div className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container border border-mint-emerald/30 shadow-inner">
               <span className="relative flex h-2 w-2">
                 <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${backendStatus === 'ok' ? 'bg-mint-emerald' : 'bg-amber-warning'}`}></span>
                 <span className={`relative inline-flex rounded-full h-2 w-2 ${backendStatus === 'ok' ? 'bg-mint-emerald' : 'bg-amber-warning'}`}></span>
               </span>
               <span className={`font-mono text-xs font-medium ${backendStatus === 'ok' ? 'text-mint-emerald' : 'text-amber-warning'}`}>
-                {backendStatus === 'ok' ? `${origin} ⇄ ${destination} Corridor Live` : 'Engine Connecting...'}
+                {origin} ⇄ {destination} Corridor Live
               </span>
             </div>
           </div>
 
-          {/* Navigation Tabs */}
           <nav className="hidden md:flex items-center gap-1 bg-surface-container-low p-1.5 rounded-xl border border-purple-500/20">
+            <button 
+              className="px-3.5 py-1.5 rounded-lg text-on-surface-variant hover:text-white hover:bg-surface-container transition-colors text-xs font-medium flex items-center gap-1.5 cursor-pointer"
+              onClick={() => setCurrentView('landing')}
+            >
+              <span className="material-symbols-outlined text-sm">home</span>
+              Portal Overview
+            </button>
             <button className="px-3.5 py-1.5 rounded-lg bg-violet-electric text-white font-medium text-xs flex items-center gap-1.5 shadow-md shadow-violet-electric/30">
               <span className="material-symbols-outlined text-sm">explore</span>
               Route Explorer
             </button>
-            <button className="px-3.5 py-1.5 rounded-lg text-on-surface-variant hover:text-white hover:bg-surface-container transition-colors text-xs font-medium flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-sm">bookmark</span>
-              Saved Routes
-              <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-purple-500/20 text-violet-lavender">3</span>
-            </button>
-            <button className="px-3.5 py-1.5 rounded-lg text-on-surface-variant hover:text-white hover:bg-surface-container transition-colors text-xs font-medium flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-sm">schedule</span>
-              Timetables
-            </button>
+            <a 
+              className="px-3.5 py-1.5 rounded-lg text-on-surface-variant hover:text-white hover:bg-surface-container transition-colors text-xs font-medium flex items-center gap-1.5"
+              href="https://github.com/SohanGanji/Rail-Eazy"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span className="material-symbols-outlined text-sm">code</span>
+              GitHub
+            </a>
           </nav>
 
-          {/* Right Actions */}
           <div className="flex items-center gap-3">
             <button 
-              className="relative p-2 rounded-xl bg-surface-container hover:bg-surface-container-high border border-purple-500/20 text-on-surface transition-colors cursor-pointer" 
-              title="Junction Updates"
-              onClick={() => alert(`Active Indian Railways Corridors: NGP, ET, BPL, VGLJ, GWL, NDLS, NZM`)}
+              className="px-3.5 py-1.5 rounded-xl bg-surface-container hover:bg-surface-container-high border border-purple-500/20 text-violet-lavender hover:text-white text-xs font-mono flex items-center gap-1.5 transition-colors cursor-pointer"
+              onClick={() => setCurrentView('landing')}
             >
-              <span className="material-symbols-outlined">notifications</span>
+              <span className="material-symbols-outlined text-sm">arrow_back</span>
+              <span>Start Page</span>
             </button>
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-purple-700 to-violet-500 border border-purple-300/40 flex items-center justify-center font-bold text-white font-pixel text-sm shadow-md">
-              RE
-            </div>
           </div>
         </div>
       </header>
@@ -255,7 +276,6 @@ export default function App() {
         <section className="relative rounded-2xl bg-surface/90 border border-purple-500/30 p-5 md:p-6 shadow-2xl backdrop-blur-md">
           <div className="absolute -top-12 left-1/4 w-80 h-32 bg-violet-electric/15 rounded-full blur-3xl pointer-events-none -z-10"></div>
           
-          {/* Controls Matrix */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
             {/* Origin Station */}
             <div className="lg:col-span-3 bg-surface-container-low p-3.5 rounded-xl border border-purple-500/20 hover:border-violet-electric/60 transition-colors">
@@ -287,7 +307,7 @@ export default function App() {
               </div>
             </div>
 
-            {/* Swap Interactive Button */}
+            {/* Swap Button */}
             <div className="lg:col-span-1 flex justify-center -my-2 lg:my-0 z-10">
               <button 
                 className="w-11 h-11 rounded-xl bg-surface-container hover:bg-violet-electric border border-purple-500/30 text-on-surface-variant hover:text-white flex items-center justify-center transition-all duration-300 hover:rotate-180 hover:glow-box-violet cursor-pointer" 
@@ -328,7 +348,7 @@ export default function App() {
               </div>
             </div>
 
-            {/* Departure Date Picker */}
+            {/* Travel Date */}
             <div className="lg:col-span-2 bg-surface-container-low p-3.5 rounded-xl border border-purple-500/20">
               <div className="flex items-center justify-between text-[11px] font-mono text-on-surface-variant mb-1">
                 <span className="uppercase">Travel Date</span>
@@ -339,7 +359,7 @@ export default function App() {
               </div>
             </div>
 
-            {/* Action CTA */}
+            {/* CTA Search Button */}
             <div className="lg:col-span-3">
               <button 
                 className="w-full h-full min-h-[64px] rounded-xl bg-gradient-to-r from-violet-electric via-purple-600 to-indigo-600 hover:from-purple-500 hover:to-violet-electric text-white font-pixel text-lg font-bold tracking-wider shadow-lg shadow-violet-electric/40 border border-purple-400/40 flex items-center justify-center gap-2.5 group transition-all duration-300 cursor-pointer disabled:opacity-50"
@@ -354,9 +374,8 @@ export default function App() {
             </div>
           </div>
 
-          {/* Travel Class Pills & Max Layover Buffer Row */}
+          {/* Class Pills & Max Layover */}
           <div className="mt-4 pt-4 border-t border-purple-500/20 grid grid-cols-1 md:grid-cols-12 gap-4 items-center bg-surface-container/60 p-3.5 rounded-xl">
-            {/* Travel Class Selection */}
             <div className="md:col-span-5 flex flex-col gap-1.5">
               <label className="text-[11px] font-mono text-on-surface-variant uppercase flex items-center gap-1.5">
                 <span className="material-symbols-outlined text-sm text-violet-lavender">airline_seat_recline_normal</span>
@@ -382,7 +401,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* Max Layover Buffer Slider */}
             <div className="md:col-span-7 flex flex-col gap-1.5">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-[11px] font-mono text-on-surface-variant flex items-center gap-1.5 uppercase">
@@ -402,10 +420,7 @@ export default function App() {
                   step="15" 
                   type="range" 
                   value={maxLayover}
-                  onChange={(e) => {
-                    const val = parseInt(e.target.value, 10);
-                    setMaxLayover(val);
-                  }}
+                  onChange={(e) => setMaxLayover(parseInt(e.target.value, 10))}
                   onMouseUp={() => executeSearch(origin, destination, maxLayover, preferredClass)}
                   onTouchEnd={() => executeSearch(origin, destination, maxLayover, preferredClass)}
                 />
@@ -415,7 +430,7 @@ export default function App() {
           </div>
         </section>
 
-        {/* VIEW TABS */}
+        {/* View Tabs */}
         <div className="flex items-center gap-2 border-b border-purple-500/20 pb-2">
           <button 
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
@@ -448,9 +463,8 @@ export default function App() {
           </button>
         </div>
 
-        {/* MAIN WORKSPACE GRID */}
+        {/* Main Grid: Sidebar + Feed */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* LEFT SIDEBAR: FUNCTIONAL FILTERS ONLY */}
           <aside className="lg:col-span-3 space-y-5">
             <div className="bg-surface/90 rounded-2xl border border-purple-500/20 p-5 space-y-5 backdrop-blur-md">
               <div className="flex items-center justify-between pb-2 border-b border-purple-500/20">
@@ -541,7 +555,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Intermediate Junction Filter */}
+              {/* Intermediate Junctions */}
               <div className="space-y-2">
                 <span className="text-[11px] font-mono text-on-surface-variant uppercase tracking-wider block font-semibold">
                   Intermediate Junctions
@@ -570,7 +584,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Layover Filter */}
+              {/* Layover Ranges */}
               <div className="space-y-2">
                 <span className="text-[11px] font-mono text-on-surface-variant uppercase tracking-wider block font-semibold">
                   Layover Time
@@ -599,7 +613,7 @@ export default function App() {
             </div>
           </aside>
 
-          {/* MAIN RESULTS FEED */}
+          {/* Results Feed */}
           <section className="lg:col-span-9 space-y-6">
             {loading ? (
               <div className="space-y-4">
@@ -615,7 +629,7 @@ export default function App() {
                     Try expanding your Max Layover Buffer slider or clearing junction filters.
                   </p>
                   <button
-                    className="px-4 py-2 bg-violet-electric text-white text-xs font-bold rounded-xl mt-2 shadow-md"
+                    className="px-4 py-2 bg-violet-electric text-white text-xs font-bold rounded-xl mt-2 shadow-md cursor-pointer"
                     onClick={() => {
                       setSelectedJunctionFilter(null);
                       setMaxLayover(360);
@@ -676,7 +690,6 @@ export default function App() {
                             </div>
                           </div>
 
-                          {/* Leg 1 Route Timeline */}
                           <div className="bg-surface-container-low p-4 rounded-xl border border-purple-500/20 grid grid-cols-12 gap-3 items-center">
                             <div className="col-span-4">
                               <span className="font-pixel text-2xl md:text-3xl font-bold text-white">{route.leg1.departureTime}</span>
@@ -730,7 +743,7 @@ export default function App() {
                           </div>
                         </div>
 
-                        {/* INTERMEDIATE JUNCTION TRANSFER BRIDGE */}
+                        {/* Transfer Bridge */}
                         <div className="relative py-1 flex flex-col items-center">
                           <div className="w-full bg-surface-container-high rounded-xl p-3 border border-purple-500/30 flex items-center justify-between gap-3 flex-wrap">
                             <div className="flex items-center gap-2.5 text-xs">
@@ -759,7 +772,6 @@ export default function App() {
                             </div>
                           </div>
 
-                          {/* Leg 2 Route Timeline */}
                           <div className="bg-surface-container-low p-4 rounded-xl border border-purple-500/20 grid grid-cols-12 gap-3 items-center">
                             <div className="col-span-4">
                               <span className="font-pixel text-2xl md:text-3xl font-bold text-white">{route.leg2.departureTime}</span>
@@ -816,7 +828,7 @@ export default function App() {
                           </div>
                         </div>
 
-                        {/* SUMMARY & ACTION STRIP */}
+                        {/* Summary Footer */}
                         <div className="pt-4 border-t border-purple-500/20 flex flex-col sm:flex-row items-center justify-between gap-4">
                           <div className="flex items-center gap-6 w-full sm:w-auto justify-between sm:justify-start">
                             <div>
@@ -873,7 +885,7 @@ export default function App() {
                     No single non-stop train connects this pair directly. Switch to the Split Routes tab to view connecting options!
                   </p>
                   <button
-                    className="px-4 py-2 bg-violet-electric text-white text-xs font-bold rounded-xl mt-2 shadow-md"
+                    className="px-4 py-2 bg-violet-electric text-white text-xs font-bold rounded-xl mt-2 shadow-md cursor-pointer"
                     onClick={() => setActiveTab('split')}
                   >
                     View Split Connections ({filteredSplitRoutes.length})
@@ -899,7 +911,6 @@ export default function App() {
                         <span className="font-mono text-xs text-on-surface-variant">Single Train (No Interchange)</span>
                       </div>
 
-                      {/* Direct Route Timeline */}
                       <div className="bg-surface-container p-4 rounded-xl border border-purple-500/20 grid grid-cols-12 gap-3 items-center">
                         <div className="col-span-4">
                           <span className="font-pixel text-2xl font-bold text-white">{train.departureTime}</span>
@@ -924,7 +935,6 @@ export default function App() {
                         </div>
                       </div>
 
-                      {/* Direct Fares & Official Verification Link */}
                       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 border-t border-purple-500/20">
                         <div className="flex items-center gap-3 flex-wrap text-xs">
                           <span className="font-mono text-[11px] text-on-surface-variant uppercase">Timetable Rates:</span>
@@ -958,7 +968,7 @@ export default function App() {
         </div>
       </main>
 
-      {/* ================= TRANSFER MAP MODAL ================= */}
+      {/* Transfer Map Modal */}
       {showTransferMap && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4" onClick={() => setShowTransferMap(null)}>
           <div className="bg-surface border border-purple-500/40 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4" onClick={e => e.stopPropagation()}>
@@ -967,7 +977,7 @@ export default function App() {
                 <span className="material-symbols-outlined text-violet-electric">alt_route</span>
                 <span className="font-pixel text-lg font-bold text-white">Transfer Protocol • {showTransferMap.intermediateStation} Junction</span>
               </div>
-              <button className="text-on-surface-variant hover:text-white" onClick={() => setShowTransferMap(null)}>
+              <button className="text-on-surface-variant hover:text-white cursor-pointer" onClick={() => setShowTransferMap(null)}>
                 <span className="material-symbols-outlined">close</span>
               </button>
             </div>
@@ -991,7 +1001,7 @@ export default function App() {
 
             <div className="pt-2 flex justify-end">
               <button 
-                className="px-4 py-2 bg-violet-electric hover:bg-violet-glow text-white font-pixel rounded-xl text-xs"
+                className="px-4 py-2 bg-violet-electric hover:bg-violet-glow text-white font-pixel rounded-xl text-xs cursor-pointer"
                 onClick={() => setShowTransferMap(null)}
               >
                 Close Transfer Protocol
@@ -1001,7 +1011,7 @@ export default function App() {
         </div>
       )}
 
-      {/* ================= CLEAN FOOTER ================= */}
+      {/* Clean Footer */}
       <footer className="mt-16 bg-surface-container-low border-t border-purple-500/20 py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-6 border-b border-purple-500/20">
@@ -1019,7 +1029,7 @@ export default function App() {
             <div className="space-y-1.5">
               <div className="font-mono text-xs text-white uppercase font-bold tracking-wider">Major Junction Hubs</div>
               <div className="text-xs text-on-surface-variant space-y-1">
-                <div>Bhopal Junction (BPL) · Central & WCR Interchange</div>
+                <div>Bhopal Junction (BPL) · Central &amp; WCR Interchange</div>
                 <div>Itarsi Junction (ET) · Central Railway Hub</div>
                 <div>VGL Jhansi (VGLJ) · North-Central Axis</div>
               </div>
@@ -1036,7 +1046,7 @@ export default function App() {
             <div className="flex items-center gap-4 font-mono text-[11px]">
               <a className="hover:text-white transition-colors" href="#">Route Directory</a>
               <a className="hover:text-white transition-colors" href="#">Timetable Index</a>
-              <a className="hover:text-white transition-colors" href="#">Terms & Privacy</a>
+              <a className="hover:text-white transition-colors" href="#">Terms &amp; Privacy</a>
             </div>
           </div>
         </div>
