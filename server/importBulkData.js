@@ -7,7 +7,7 @@ const Station = mongoose.model('Station', new mongoose.Schema({
   code: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   city: { type: String, default: '' },
-  zone: { type: String, default: '' }
+  zone: { type: String, default: 'IR' }
 }));
 
 const Train = mongoose.model('Train', new mongoose.Schema({
@@ -17,15 +17,15 @@ const Train = mongoose.model('Train', new mongoose.Schema({
   destination: { type: String, required: true },
   departureTime: { type: String, default: '00:00' },
   arrivalTime: { type: String, default: '00:00' },
-  duration: { type: String, default: '' },
-  durationMinutes: { type: Number, default: 0 },
+  duration: { type: String, default: '12h 00m' },
+  durationMinutes: { type: Number, default: 720 },
   daysOfOperation: { type: [String], default: ['Daily'] },
   classes: { type: [String], default: ['SL', '3A', '2A'] },
   fares: {
-    SL: { type: Number, default: 350 },
-    '3A': { type: Number, default: 950 },
-    '2A': { type: Number, default: 1400 },
-    '1A': { type: Number, default: 2400 },
+    SL: { type: Number, default: 380 },
+    '3A': { type: Number, default: 1020 },
+    '2A': { type: Number, default: 1480 },
+    '1A': { type: Number, default: 2500 },
     CC: { type: Number, default: 850 }
   },
   stops: [{
@@ -33,7 +33,6 @@ const Train = mongoose.model('Train', new mongoose.Schema({
     stationName: String,
     arrivalTime: String,
     departureTime: String,
-    haltMinutes: Number,
     dayOffset: Number
   }]
 }));
@@ -45,39 +44,34 @@ async function runImport() {
     console.log('Connected!');
 
     const dataDir = path.join(__dirname, 'data');
-    const stationsPath = path.join(dataDir, 'stations.json');
-    const trainsPath = path.join(dataDir, 'trains.json');
-    const schedulesPath = path.join(dataDir, 'schedules.json');
+    const files = fs.readdirSync(dataDir);
+    console.log('Detected files in data directory:', files);
 
-    // 1. IMPORT STATIONS
-    if (fs.existsSync(stationsPath)) {
-      console.log('Reading stations.json...');
-      const rawStations = JSON.parse(fs.readFileSync(stationsPath, 'utf-8'));
-      const stationsList = (rawStations.features || rawStations).map((s) => {
+    // 1. Process Stations
+    const stationsFile = files.find(f => f.toLowerCase().includes('station'));
+    if (stationsFile) {
+      console.log(`Loading stations from ${stationsFile}...`);
+      const raw = JSON.parse(fs.readFileSync(path.join(dataDir, stationsFile), 'utf-8'));
+      const items = Array.isArray(raw) ? raw : (raw.features || Object.values(raw));
+
+      const stationDocs = items.map(s => {
         const p = s.properties || s;
         return {
-          code: (p.code || p.station_code || '').trim().toUpperCase(),
-          name: (p.name || p.station_name || '').trim(),
-          city: (p.state || p.city || p.name || '').trim(),
-          zone: (p.zone || 'IR').trim()
+          code: String(p.code || p.station_code || p.StationCode || '').trim().toUpperCase(),
+          name: String(p.name || p.station_name || p.StationName || '').trim(),
+          city: String(p.state || p.city || p.name || '').trim(),
+          zone: String(p.zone || 'IR').trim()
         };
-      }).filter((s) => s.code && s.name);
+      }).filter(s => s.code && s.name);
 
-      // Deduplicate by station code to ensure bulkWrite upsert safety
-      const uniqueStationsMap = new Map();
-      for (const st of stationsList) {
-        if (!uniqueStationsMap.has(st.code)) {
-          uniqueStationsMap.set(st.code, st);
-        }
-      }
-      const uniqueStations = Array.from(uniqueStationsMap.values());
+      const uniqueStations = Array.from(new Map(stationDocs.map(st => [st.code, st])).values());
 
-      console.log(`Preparing to write ${uniqueStations.length} stations...`);
-      const stationChunkSize = 1000;
-      for (let i = 0; i < uniqueStations.length; i += stationChunkSize) {
-        const chunk = uniqueStations.slice(i, i + stationChunkSize);
+      console.log(`Writing ${uniqueStations.length} stations in batches...`);
+      const batchSize = 1000;
+      for (let i = 0; i < uniqueStations.length; i += batchSize) {
+        const batch = uniqueStations.slice(i, i + batchSize);
         await Station.bulkWrite(
-          chunk.map((st) => ({
+          batch.map(st => ({
             updateOne: {
               filter: { code: st.code },
               update: { $set: st },
@@ -86,70 +80,63 @@ async function runImport() {
           }))
         );
       }
-      console.log('Stations successfully imported!');
+      console.log('Stations imported successfully!');
     }
 
-    // 2. READ SCHEDULES (if available)
+    // 2. Process Schedules (if separate)
+    const schedulesFile = files.find(f => f.toLowerCase().includes('schedule'));
     const scheduleMap = new Map();
-    if (fs.existsSync(schedulesPath)) {
-      console.log('Mapping schedules (this may take a few seconds)...');
-      const rawSchedules = JSON.parse(fs.readFileSync(schedulesPath, 'utf-8'));
-      for (const stop of rawSchedules) {
-        const trainNum = String(stop.train_number || stop.trainNumber).trim();
-        if (!scheduleMap.has(trainNum)) {
-          scheduleMap.set(trainNum, []);
-        }
-        scheduleMap.get(trainNum).push({
-          stationCode: (stop.station_code || stop.stationCode || '').trim().toUpperCase(),
-          stationName: stop.station_name || stop.stationName || '',
-          arrivalTime: stop.arrival || stop.arrivalTime || 'None',
-          departureTime: stop.departure || stop.departureTime || 'None',
-          dayOffset: stop.day || 0
+    if (schedulesFile) {
+      console.log(`Mapping schedules from ${schedulesFile}...`);
+      const raw = JSON.parse(fs.readFileSync(path.join(dataDir, schedulesFile), 'utf-8'));
+      const items = Array.isArray(raw) ? raw : (raw.features || Object.values(raw));
+
+      for (const st of items) {
+        const p = st.properties || st;
+        const num = String(p.train_number || p.trainNumber || p.TrainNo || '').trim();
+        if (!scheduleMap.has(num)) scheduleMap.set(num, []);
+        scheduleMap.get(num).push({
+          stationCode: String(p.station_code || p.stationCode || p.StationCode || '').trim().toUpperCase(),
+          stationName: String(p.station_name || p.stationName || '').trim(),
+          arrivalTime: String(p.arrival || p.arrivalTime || 'None').trim(),
+          departureTime: String(p.departure || p.departureTime || 'None').trim(),
+          dayOffset: Number(p.day || 0)
         });
       }
     }
 
-    // 3. IMPORT TRAINS
-    if (fs.existsSync(trainsPath)) {
-      console.log('Reading trains.json...');
-      const rawTrains = JSON.parse(fs.readFileSync(trainsPath, 'utf-8'));
-      const trainsList = (rawTrains.features || rawTrains).map((t) => {
+    // 3. Process Trains
+    const trainsFile = files.find(f => f.toLowerCase().includes('train'));
+    if (trainsFile) {
+      console.log(`Loading trains from ${trainsFile}...`);
+      const raw = JSON.parse(fs.readFileSync(path.join(dataDir, trainsFile), 'utf-8'));
+      const items = Array.isArray(raw) ? raw : (raw.features || Object.values(raw));
+
+      const trainDocs = items.map(t => {
         const p = t.properties || t;
-        const trainNum = String(p.number || p.train_number || p.trainNumber || '').trim();
-        const originCode = (p.from_station_code || p.origin || '').trim().toUpperCase();
-        const destCode = (p.to_station_code || p.destination || '').trim().toUpperCase();
-        const durationHours = p.duration_h || Math.floor((p.duration_m || 0) / 60) || 12;
+        const num = String(p.number || p.train_number || p.trainNumber || p.TrainNo || '').trim();
+        const origin = String(p.from_station_code || p.from || p.origin || p.Source || '').trim().toUpperCase();
+        const dest = String(p.to_station_code || p.to || p.destination || p.Destination || '').trim().toUpperCase();
 
         return {
-          trainNumber: trainNum,
-          trainName: (p.name || p.train_name || 'Express').trim(),
-          origin: originCode,
-          destination: destCode,
-          departureTime: p.departure || '08:00',
-          arrivalTime: p.arrival || '20:00',
-          duration: `${durationHours}h 00m`,
-          durationMinutes: durationHours * 60,
-          stops: scheduleMap.get(trainNum) || []
+          trainNumber: num,
+          trainName: String(p.name || p.train_name || p.TrainName || 'Express').trim(),
+          origin: origin,
+          destination: dest,
+          departureTime: String(p.departure || p.from_time || '08:00').trim(),
+          arrivalTime: String(p.arrival || p.to_time || '20:00').trim(),
+          stops: scheduleMap.get(num) || p.stops || []
         };
-      }).filter((t) => t.trainNumber && t.origin && t.destination);
+      }).filter(t => t.trainNumber && t.origin && t.destination);
 
-      // Deduplicate trains by trainNumber
-      const uniqueTrainsMap = new Map();
-      for (const tr of trainsList) {
-        if (!uniqueTrainsMap.has(tr.trainNumber)) {
-          uniqueTrainsMap.set(tr.trainNumber, tr);
-        }
-      }
-      const uniqueTrains = Array.from(uniqueTrainsMap.values());
+      const uniqueTrains = Array.from(new Map(trainDocs.map(tr => [tr.trainNumber, tr])).values());
 
-      console.log(`Preparing to write ${uniqueTrains.length} trains...`);
-      
-      // Batch in chunks of 500 for high efficiency
-      const chunkSize = 500;
-      for (let i = 0; i < uniqueTrains.length; i += chunkSize) {
-        const chunk = uniqueTrains.slice(i, i + chunkSize);
+      console.log(`Writing ${uniqueTrains.length} trains in batches...`);
+      const batchSize = 500;
+      for (let i = 0; i < uniqueTrains.length; i += batchSize) {
+        const batch = uniqueTrains.slice(i, i + batchSize);
         await Train.bulkWrite(
-          chunk.map((tr) => ({
+          batch.map(tr => ({
             updateOne: {
               filter: { trainNumber: tr.trainNumber },
               update: { $set: tr },
@@ -157,15 +144,15 @@ async function runImport() {
             }
           }))
         );
-        console.log(`Saved trains ${i + 1} to ${Math.min(i + chunkSize, uniqueTrains.length)}...`);
+        console.log(`Stored ${Math.min(i + batchSize, uniqueTrains.length)} of ${uniqueTrains.length} trains...`);
       }
-      console.log('Trains successfully imported!');
+      console.log('Trains imported successfully!');
     }
 
-    console.log('Whole dataset imported directly into MongoDB Atlas!');
+    console.log('All dataset JSON files successfully synced to MongoDB Atlas!');
     process.exit(0);
   } catch (err) {
-    console.error('Import failed:', err);
+    console.error('Import error:', err);
     process.exit(1);
   }
 }
